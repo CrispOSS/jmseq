@@ -1,0 +1,20 @@
+package javamop;
+
+MyStack(SampleStack ss) {
+	event pu before(MyStack ms) :
+		call(* MyStack.push(..)) && target(ms) {}
+	event po before(MyStack ms) :
+		call(* MyStack.pop()) && target(ms) {}
+		
+	cfg : 
+		S -> S S | B | pu S,
+		B -> pu B po | epsilon
+	
+	@fail {
+		System.out.println("failed");
+		__RESET;
+	}
+	
+}
+ 
+ 

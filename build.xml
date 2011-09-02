@@ -1,0 +1,58 @@
+<project name="jmseq" basedir=".">
+
+	<property environment="env" />
+
+	<property name="mop.dir" location="${basedir}/javamop" />
+	<property name="mop.src.dir" location="${basedir}/src/main/java/mop" />
+	<property name="classes.dir" location="${basedir}/target/classes" />
+	<property name="java.home" location="${env.JAVA_HOME}" />
+	<property name="java.lib" location="${java.home}/lib" />
+	<property name="tools.jar" value="tools.jar" />
+	<property name="javamop-lib" location="${basedir}/lib" />
+
+	<path id="javamop-jars">
+		<fileset dir="${javamop-lib}">
+			<include name="**/javamop.jar" />
+			<include name="**/commons-collections-3.2.jar" />
+			<include name="**/logicrepository.jar" />
+			<include name="**/plugins/*.jar" />
+		</fileset>
+	</path>
+
+	<macrodef name="javamopc">
+		<attribute name="mop.dir" />
+		<attribute name="mop" />
+		<sequential>
+			<mkdir dir="${mop.src.dir}/@{mop.dir}" />
+			<echo>JavaMop compiling ${mop.dir}/@{mop.dir}/@{mop} to ${mop.src.dir}/@{mop.dir} </echo>
+			<java fork="true" classname="javamop.Main">
+				<classpath>
+					<path refid="javamop-jars">
+					</path>
+				</classpath>
+				<arg value="-local" />
+				<arg value="-d" />
+				<arg value="${mop.src.dir}/@{mop.dir}" />
+				<arg value="${mop.dir}/@{mop.dir}/@{mop}" />
+			</java>
+		</sequential>
+	</macrodef>
+
+	<target name="javamop-help">
+		<java fork="true" classname="javamop.Main">
+			<classpath>
+				<path refid="javamop-jars">
+				</path>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="javamopc-HashSet">
+		<javamopc mop.dir="ERE/HashSet" mop="HashSet.mop" />
+	</target>
+
+	<target name="javamopc-HasNext">
+		<javamopc mop.dir="ERE/HasNext" mop="HasNext.mop" />
+	</target>
+
+</project>

@@ -1,0 +1,23 @@
+package mop;
+
+import mop.*;
+
+Apples(Apples a) {
+	event eating before(Pat p) :
+		call(* Pat.eat()) && target(p) {}
+	event retrieval before(Pat p) :
+		call(* Basket.retrieve()) && cflow(Apples_eating1(p)) {}
+	event storage before(Pat p) :
+		call(* Basket.store()) && cflow(Apples_eating1(p)) {}
+		
+	cfg : 
+		S -> eating retrieval
+	
+	@fail {
+		System.out.println("failed");
+		__RESET;
+	}
+	
+}
+ 
+ 
