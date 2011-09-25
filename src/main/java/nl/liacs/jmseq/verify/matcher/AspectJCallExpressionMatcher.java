@@ -5,6 +5,7 @@ package nl.liacs.jmseq.verify.matcher;
 
 import java.util.List;
 
+import nl.liacs.jmseq.verify.callexpression.CallAnyExpression;
 import nl.liacs.jmseq.verify.callexpression.CallExpression;
 import nl.liacs.jmseq.verify.callexpression.CallExpressionParser;
 
@@ -26,16 +27,18 @@ public class AspectJCallExpressionMatcher extends AbstractCallExpressionMatcher 
 		if (target.equals(candidate)) {
 			return candidate;
 		}
+		if (target instanceof CallAnyExpression) {
+			return candidate;
+		}
 		PointcutParser parser = getPointcutParser();
 		String candidateCE = candidate.getExpression();
 		try {
+			logger.debug("Parsing call expression: {}", candidateCE);
 			parser.parsePointcutExpression(candidateCE);
 		} catch (UnsupportedPointcutPrimitiveException e) {
-			// TODO Log
 			e.printStackTrace();
 			return null;
 		} catch (IllegalArgumentException e) {
-			// TODO Log
 			e.printStackTrace();
 			return null;
 		}

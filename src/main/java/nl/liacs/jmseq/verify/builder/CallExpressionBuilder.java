@@ -15,7 +15,7 @@ public interface CallExpressionBuilder {
 
 	String CALL_CLOSING = "}";
 	String INNERCALL_CLOSING = "]";
-	String OCCURRENCE_PLUS = "$";
+	String OCCURRENCE_PLUS = "~";
 	String OCCURRENCE_STAR = "%";
 	String INNERCALL_OPENING = "[";
 	String CALL_OPENING = "{";
@@ -34,5 +34,7 @@ public interface CallExpressionBuilder {
 	 * @return
 	 */
 	CallExpression buildCallExpression(String sequentialSpecificationExpresssion);
+	
+	StateTransitionMap getTransitions();
 
 }

@@ -113,8 +113,10 @@ public class DefaultVirtualMachineEventProcessor implements
 		} else {
 			Execution execution = this.eventHandler.handleEvent(event,
 					executionTraceOracle);
-			logger.debug("Received event: {}", event);
-			executionVerifier.verfiyExecution(execution);
+			if (execution != null) {
+				logger.debug("Received event: {}", event);
+				executionVerifier.verfiyExecution(execution);
+			}
 		}
 		return null;
 	}

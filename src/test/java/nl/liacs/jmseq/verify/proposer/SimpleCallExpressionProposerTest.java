@@ -11,8 +11,6 @@ import nl.liacs.jmseq.verify.builder.AspecJCallExpressionBuilder;
 import nl.liacs.jmseq.verify.builder.CallExpressionBuilder;
 import nl.liacs.jmseq.verify.callexpression.CallExpression;
 import nl.liacs.jmseq.verify.callexpression.Occurrence;
-import nl.liacs.jmseq.verify.proposer.CallExpressionProposer;
-import nl.liacs.jmseq.verify.proposer.SimpleCallExpressionProposer;
 
 import org.junit.Test;
 
@@ -99,6 +97,35 @@ public class SimpleCallExpressionProposerTest {
 		Set<CallExpression> possibilities = proposer.proposePossibleNextExpressions(ce1);
 		System.out.println(possibilities);
 
+	}
+	
+	@Test
+	public void testIterator() throws Exception {
+		CallExpressionBuilder builder = new AspecJCallExpressionBuilder();
+		CallExpressionProposer proposer = new SimpleCallExpressionProposer();
+		
+		Execution<?> e1 = new MockExecution("mop.ERE.HasNext.Iterator", "hasNext", new String[] {}, "boolean");
+		Execution<?> e2 = new MockExecution("mop.ERE.HasNext.Iterator", "hasNext", new String[] {}, "boolean");
+		Execution<?> e3 = new MockExecution("mop.ERE.HasNext.Iterator", "next", new String[] {}, "Object");
+		
+		CallExpression ce1 = builder.buildCallExpression(e1);
+		ce1.setReocurrence(Occurrence.Once);
+		
+		CallExpression ce2 = builder.buildCallExpression(e2);
+		ce2.setReocurrence(Occurrence.Star);
+		
+		CallExpression ce3 = builder.buildCallExpression(e3);
+		ce3.setReocurrence(Occurrence.Once);
+		
+		ce1.getSiblingCallExpressions().add(ce2);
+		ce2.getSiblingCallExpressions().add(ce3);
+		
+		Set<CallExpression> p1 = proposer.proposePossibleNextExpressions(ce1);
+		System.out.println(p1 + "\n ============== \n");
+		
+		Set<CallExpression> p2 = proposer.proposePossibleNextExpressions(ce2);
+		System.out.println(p2);
+		
 	}
 
 }

@@ -1,32 +1,38 @@
 package mop.ERE.HasNext;
 
-import nl.liacs.jmseq.annotation.SequencedMethod;
-import nl.liacs.jmseq.annotation.SequencedObject;
+import java.util.Random;
 
-@SequencedObject
 public class HasNextTester {
 
-	@SequencedMethod(value = "{call(* *.HasNextRunner.testFailure(..))["
-			+ "{call(* *.Iterator.hasNext())}"
-			+ "{call(* *.Iterator.hasNext())}$"
-			+ "{call(* *.Iterator.next())}" + "]$")
-	public void runFailure() {
-		HasNextRunner v = new HasNextRunner();
-		v.testFailure(1000);
+	private Random r = new Random(System.currentTimeMillis());
+	HasNextRunner v;
+	
+	public HasNextTester() {
+		v = new HasNextRunner(fillVector(10), 10);
 	}
 
-	@SequencedMethod(value = "{call(* *.HasNextRunner.testSuccess(..))["
-			+ "{call(* *.Iterator.hasNext())}"
-			+ "{call(* *.Iterator.hasNext())}$"
-			+ "{call(* *.Iterator.next())}" + "]$")
+	public void runFailure() {
+		v.testFailure();
+	}
+
 	public void runSuccess() {
-		HasNextRunner v = new HasNextRunner();
-		v.testSuccess(1000);
+		v.testSuccess();
+	}
+
+	private Vector<Integer> fillVector(int repetitions) {
+		Vector<Integer> v = new Vector<Integer>();
+		for (int i = 0; i < repetitions; ++i) {
+			v.add(r.nextInt());
+		}
+		return v;
 	}
 
 	public static void main(String[] args) {
+		long start = System.currentTimeMillis();
 		HasNextTester tester = new HasNextTester();
 		tester.runFailure();
+		long end = System.currentTimeMillis();
+		System.out.println((end - start));
 	}
 
 }

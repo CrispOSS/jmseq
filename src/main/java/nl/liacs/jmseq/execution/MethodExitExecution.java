@@ -34,5 +34,10 @@ public class MethodExitExecution extends SimpleExecution<MethodExitEvent> {
 	public ObjectReference getExecutingCallerObject() {
 		return callerObject;
 	}
+	
+	@Override
+	public String toString() {
+		return "Method Exit: " + getExecutingClassType() + "." + getExecutingMethodName();
+	}
 
 }

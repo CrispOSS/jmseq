@@ -3,6 +3,7 @@
  */
 package nl.liacs.jmseq.verify.builder;
 
+import static org.junit.Assert.*;
 import nl.liacs.jmseq.execution.Execution;
 import nl.liacs.jmseq.execution.MockExecution;
 import nl.liacs.jmseq.verify.builder.AspecJCallExpressionBuilder;
@@ -47,6 +48,16 @@ public class AspectJCallExpressionBuilderTest {
 	public void testBuildCallExpression4() {
 		CallExpressionBuilder builder = new AspecJCallExpressionBuilder();
 		String spec = "{call(* * *.Dample.hisMethod(..))[{call(* * *.Sample.myMethod(..))}{call(* * *.Mample.yourMethod(..))}]}";
+		CallExpression expression = builder.buildCallExpression(spec);
+		System.out.println(expression);
+	}
+	
+	@Test
+	public void testBuildCallExpression5() throws Exception {
+		CallExpressionBuilder builder = new AspecJCallExpressionBuilder();
+		String spec = "{call(public boolean mop..Vector.iterator())}"
+				+ "{call(public boolean mop..Vector$IteratorDelegate.hasNext())}~"
+				+ "{call(public Object mop..Vector$IteratorDelegate.next())}";
 		CallExpression expression = builder.buildCallExpression(spec);
 		System.out.println(expression);
 	}

@@ -3,6 +3,8 @@
  */
 package nl.liacs.jmseq.verify.failurehandler;
 
+import javax.management.RuntimeErrorException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,7 @@ public class SequentialMetadataVerificationFailureHandler implements Verificatio
 		Class<?> handlerClass = annotation.verificationFailureHandler();
 		if (null == handlerClass) {
 			logger.warn("No handler class for verification failure is specified.");
-			return;
+			throw new RuntimeErrorException(new Error("Execution failed."));
 		}
 		if (!VerificationFailureHandler.class.isAssignableFrom(handlerClass)) {
 			logger.warn("No compatible " + VerificationFailureHandler.class + " handler is provided. " +

@@ -16,6 +16,7 @@ public class CallExpressionExactMatcher extends AbstractCallExpressionMatcher {
 	public CallExpression match(CallExpression candidate, CallExpression target) {
 		String str1 = candidate.getExpression();
 		String str2 = target.getExpression();
+		logger.info("Matching identical call expression: {} with {}.", str1, str2);
 		if (str1.equals(str2)) {
 			return candidate;
 		}

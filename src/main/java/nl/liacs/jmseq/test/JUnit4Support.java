@@ -51,7 +51,7 @@ public abstract class JUnit4Support {
 	}
 
 	protected String[] getExcludedPatterns() {
-		return new String[] { "javax.*", "sun.*", "com.sun.*",
+		return new String[] { "java.*", "javax.*", "sun.*", "com.sun.*",
 				"org.*", "net.*", "com.*" };
 	}
 

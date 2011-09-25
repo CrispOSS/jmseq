@@ -11,6 +11,8 @@ import java.util.List;
  * @author Behrooz Nobakht [behrooz dot nobakht at gmail dot com]
  */
 public interface CallExpression {
+	
+	String CALL_ANY = "call(*)";
 
 	String getExpression();
 

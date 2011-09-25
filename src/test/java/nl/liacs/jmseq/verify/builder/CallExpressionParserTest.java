@@ -3,6 +3,8 @@
  */
 package nl.liacs.jmseq.verify.builder;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import nl.liacs.jmseq.verify.callexpression.CallExpressionParser;
@@ -55,6 +57,22 @@ public class CallExpressionParserTest {
 		String returnTypePattern = CallExpressionParser.parseReturnTypePattern(expression);
 		System.out.println(returnTypePattern);
 		Assert.assertEquals("void", returnTypePattern);
+	}
+	
+	@Test
+	public void testParseWildCard1() throws Exception {
+		String expression = "call(public boolean mop..Iterator.hasNext())";
+		String p = CallExpressionParser.parseClassTypePattern(expression);
+		System.out.println(p);
+		p = CallExpressionParser.parseMethodArgumentTypePatterns(expression);
+		System.out.println(p);
+		p = CallExpressionParser.parseMethodName(expression);
+		System.out.println(p);
+		p = CallExpressionParser.parseReturnTypePattern(expression);
+		System.out.println(p);
+		List<String> args = CallExpressionParser.parseMethodArgumentTypePatternList(expression);
+		System.out.println(args);
+		System.out.println("*");
 	}
 	
 }

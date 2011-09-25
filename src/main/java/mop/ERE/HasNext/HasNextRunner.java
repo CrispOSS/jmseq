@@ -1,39 +1,42 @@
 package mop.ERE.HasNext;
 
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Vector;
+import nl.liacs.jmseq.annotation.SequencedMethod;
+import nl.liacs.jmseq.annotation.SequencedObject;
 
+@SequencedObject
 public class HasNextRunner {
 
-	private Random r = new Random(System.currentTimeMillis());
-
+	private int repetition;
+	private Vector<Integer> v;
 	
-	public void testFailure(int repetitions) {
-		Vector<Integer> v = fillVector(repetitions);
+	public HasNextRunner(Vector<Integer> v, int repetition) {
+		this.v = v;
+		this.repetition = repetition;
+	}
+	
+	@SequencedMethod(value = ""
+			+ "{call(public boolean mop..Vector.iterator())}~"
+			+ "{call(public boolean mop..IteratorDelegate.hasNext())}~"
+			+ "{call(public Object mop..IteratorDelegate.next())}"
+			+ "")
+	public void testFailure() {
 		Iterator<Integer> i = v.iterator();
 		i.hasNext();
 		i.next();
 		i.next();
 	}
 
-	public void testSuccess(int repetitions) {
-		Vector<Integer> v = fillVector(repetitions);
+	@SequencedMethod(value = "" +
+			  "{call(public boolean mop..Vector.iterator())}~"
+			+ "{call(public boolean mop..IteratorDelegate.hasNext())}~"
+			+ "{call(public Object mop..IteratorDelegate.next())}"
+			+ "")
+	public void testSuccess() {
 		Iterator<Integer> i = v.iterator();
-		while (i.hasNext()) {
-			i.next();
-			if (Math.random() > 0.5) {
-				i.hasNext();
-			}
+		for (int k = 0; k < repetition && i.hasNext(); ++k) {
+			i.hasNext();
 		}
-	}
-
-	private Vector<Integer> fillVector(int repetitions) {
-		Vector<Integer> v = new Vector<Integer>();
-		for (int i = 0; i < repetitions; ++i) {
-			v.add(r.nextInt());
-		}
-		return v;
+		i.next();
 	}
 
 }

@@ -9,6 +9,7 @@ import nl.liacs.jmseq.annotation.SequentialExecutionMetaData;
 import nl.liacs.jmseq.execution.MethodEntryExecution;
 import nl.liacs.jmseq.verify.builder.AspecJCallExpressionBuilder;
 import nl.liacs.jmseq.verify.builder.CallExpressionBuilder;
+import nl.liacs.jmseq.verify.builder.StateTransitionMap;
 import nl.liacs.jmseq.verify.callexpression.CallExpression;
 import nl.liacs.jmseq.verify.matcher.AspectJCallExpressionMatcher;
 import nl.liacs.jmseq.verify.matcher.CallExpressionMatcher;
@@ -48,12 +49,13 @@ public class CallExpressionStateMachineFactory {
 		}
 		String sequenceExpression = annotation.value();
 		CallExpression callExpression = callExpressionBuilder.buildCallExpression(sequenceExpression);
+		StateTransitionMap transitions = callExpressionBuilder.getTransitions();
 		CallExpressionStateMachine cesm = new CallExpressionStateMachine(execution, annotation, metadata,
-				callExpression);
+				callExpression, transitions);
 		cesm.setCallExpressionBuilder(callExpressionBuilder);
 		cesm.setCallExpressionMatcher(callExpressionMatcher);
 		cesm.setCallExpressionProposer(callExpressionProposer);
 		return cesm;
 	}
-
+	
 }

@@ -42,5 +42,10 @@ public class SequencedObjectMetaData {
 		}
 		return null;
 	}
+	
+	@Override
+	public String toString() {
+		return "[" + targetClass.getSimpleName() + ": " + sequentiallyExecutedMethods + "]";
+	}
 
 }

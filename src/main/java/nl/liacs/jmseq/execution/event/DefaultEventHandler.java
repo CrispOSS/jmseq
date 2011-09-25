@@ -74,6 +74,14 @@ public class DefaultEventHandler implements EventHandler {
 		}
 		return null;
 	}
+	
+	private boolean isConstructorEvent(MethodEntryEvent event) {
+		return event.method().name().equals("<init>");
+	}
+
+	private boolean isConstructorEvent(MethodExitEvent event) {
+		return event.method().name().equals("<init>");
+	}
 
 	public void setExceptionEventHandler(
 			ExceptionEventHandler exceptionEventHandler) {
@@ -138,6 +146,9 @@ public class DefaultEventHandler implements EventHandler {
 		public Execution<?> handleEvent(MethodEntryEvent event,
 				ExecutionTraceOracle executionTraceOracle) {
 			Method method = event.method();
+			if (isConstructorEvent(event)) {
+				return null;
+			}
 			String className = method.declaringType().name();
 			Map<Object, Object> virtualMachineOptions = executionTraceOracle
 					.getVirtualMachineOptions();
@@ -176,6 +187,9 @@ public class DefaultEventHandler implements EventHandler {
 		public Execution<?> handleEvent(MethodExitEvent event,
 				ExecutionTraceOracle executionTraceOracle) {
 			Method method = event.method();
+			if (isConstructorEvent(event)) {
+				return null;
+			}
 			String className = method.declaringType().name();
 			try {
 				ObjectReference object = event.thread().frame(0).thisObject();
