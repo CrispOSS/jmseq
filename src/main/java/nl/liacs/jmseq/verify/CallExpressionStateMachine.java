@@ -11,6 +11,7 @@ import java.util.Stack;
 
 import nl.liacs.jmseq.annotation.SequencedMethod;
 import nl.liacs.jmseq.annotation.SequentialExecutionMetaData;
+import nl.liacs.jmseq.execution.ExceptionExecution;
 import nl.liacs.jmseq.execution.Execution;
 import nl.liacs.jmseq.execution.ExecutionUtils;
 import nl.liacs.jmseq.execution.MethodEntryExecution;
@@ -89,7 +90,7 @@ public class CallExpressionStateMachine {
 			sm.addListener(new StateChangeListener() {
 				@Override
 				public void stateChanged(Entity entity, State oldState, State newState) {
-					logger.warn("{} => {}", oldState.getBaseName(), newState.getBaseName());
+					logger.debug("{} => {}", oldState.getBaseName(), newState.getBaseName());
 				}
 			});
 		} catch (FiniteStateException e) {
@@ -100,6 +101,10 @@ public class CallExpressionStateMachine {
 	public boolean isValidNextExecution(Execution<?> execution) {
 		boolean isMethodEntryEvent = ExecutionUtils.isMethodEntryExecution(execution);
 		boolean isMethodExitEvent = ExecutionUtils.isMethodExitExecution(execution);
+		boolean isExceptionEvent = ExecutionUtils.isMethodExceptionExecution(execution);
+		if (isExceptionEvent) {
+			return isValidExceptionExecution((ExceptionExecution) execution);
+		}
 		if (isMethodEntryEvent) {
 			return isValidNextMethodEntryExecution2((MethodEntryExecution) execution);
 		} else if (isMethodExitEvent) {
@@ -122,6 +127,37 @@ public class CallExpressionStateMachine {
 
 	private boolean isValidNexMethodExitExecution2(MethodExitExecution execution) {
 		return true;
+	}
+
+	private boolean isValidExceptionExecution(ExceptionExecution execution) {
+		if (ExecutionUtils.isClassLoaderException(execution)) {
+			return true;
+		}
+		boolean allowExceptions = annotation.allowExceptions();
+		if (!allowExceptions) {
+			logger.error("Exceptions not allowed.");
+			return false;
+		}
+		Class<?>[] exceptions = annotation.expect();
+		// any exception is fine
+		if (exceptions.length == 0) {
+			return true;
+		}
+		String exceptionClassName = execution.getExecutingClassType();
+		try {
+			Class<?> exceptionClass = Class.forName(exceptionClassName);
+			for (Class<?> cls : exceptions) {
+				logger.warn("comparing '{}' with '{}'", exceptionClass, cls);
+				if (cls.isAssignableFrom(exceptionClass)) {
+					logger.warn("Exception '{}' is allowed.", exceptionClassName);
+					return true;
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			logger.error("Exception class not found: {}", exceptionClassName);
+		}
+		handleVerificationFailure(execution, annotation);
+		return false;
 	}
 
 	private boolean isValidNextMethodEntryExecution(MethodEntryExecution execution) {

@@ -42,4 +42,26 @@ public @interface SequencedMethod {
 	 */
 	Class<?> verificationFailureHandler() default SequentialMetadataVerificationFailureHandler.class;
 
+	/**
+	 * Specifies the exceptions that may be expected during the sequenced
+	 * execution. Refer to {@link #allowExceptions()}.
+	 * 
+	 * @return an array of classes of type {@link Exception}
+	 * @see #allowExceptions()
+	 */
+	Class<?>[] expect() default {};
+
+	/**
+	 * Specifies whether exceptions are allowed in the context of this execution
+	 * or not. If not allowed, any exception during the execution will halt the
+	 * virtual machine running the program. If allowed and no exceptions are
+	 * specified using {@link #expect()}, then exceptions are ignored during
+	 * execution.
+	 * 
+	 * 
+	 * @return {@code true} if allowed; otherwise {@code false}.
+	 * @see #expect()
+	 */
+	boolean allowExceptions() default true;
+
 }

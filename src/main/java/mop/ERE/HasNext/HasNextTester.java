@@ -30,7 +30,7 @@ public class HasNextTester {
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
 		HasNextTester tester = new HasNextTester();
-		tester.runFailure();
+		tester.runSuccess();
 		long end = System.currentTimeMillis();
 		System.out.println((end - start));
 	}

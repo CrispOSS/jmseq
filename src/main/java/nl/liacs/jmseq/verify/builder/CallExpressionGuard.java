@@ -35,7 +35,7 @@ public class CallExpressionGuard implements Guard {
 	public boolean accept(Event message, Entity entity, com.continuent.tungsten.commons.patterns.fsm.State state) {
 		State s = (State) state;
 		CallExpression ce = (CallExpression) message.getData();
-		logger.warn("Guard on {}; Current State: {}; received: {}", new Object[] { this.callExpression.getExpression(),
+		logger.debug("Guard on {}; Current State: {}; received: {}", new Object[] { this.callExpression.getExpression(),
 				s.getBaseName(), ce.getExpression() });
 		if (matcher.match(callExpression, ce) != null) {
 			return true;

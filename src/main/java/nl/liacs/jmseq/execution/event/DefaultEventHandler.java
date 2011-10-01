@@ -5,6 +5,7 @@ package nl.liacs.jmseq.execution.event;
 
 import java.util.Map;
 
+import nl.liacs.jmseq.execution.ExceptionExecution;
 import nl.liacs.jmseq.execution.Execution;
 import nl.liacs.jmseq.execution.ExecutionTraceOracle;
 import nl.liacs.jmseq.execution.vm.VirtualMachineOption;
@@ -45,36 +46,27 @@ public class DefaultEventHandler implements EventHandler {
 	private VMDisconnectEventHandler vmDisconnectEventHandler = new VMDisconnectEventHandler();
 
 	@Override
-	public Execution<?> handleEvent(Event event,
-			ExecutionTraceOracle executionTraceOracle) {
+	public Execution<?> handleEvent(Event event, ExecutionTraceOracle executionTraceOracle) {
 		if (event instanceof ExceptionEvent) {
-			return exceptionEventHandler.handleEvent((ExceptionEvent) event,
-					executionTraceOracle);
+			return exceptionEventHandler.handleEvent((ExceptionEvent) event, executionTraceOracle);
 		} else if (event instanceof MethodEntryEvent) {
-			return methodEntryEventHandler.handleEvent(
-					(MethodEntryEvent) event, executionTraceOracle);
+			return methodEntryEventHandler.handleEvent((MethodEntryEvent) event, executionTraceOracle);
 		} else if (event instanceof MethodExitEvent) {
-			return methodExitEventHandler.handleEvent((MethodExitEvent) event,
-					executionTraceOracle);
+			return methodExitEventHandler.handleEvent((MethodExitEvent) event, executionTraceOracle);
 		} else if (event instanceof ThreadDeathEvent) {
-			return threadDeathEventHandler.handleEvent(
-					(ThreadDeathEvent) event, executionTraceOracle);
+			return threadDeathEventHandler.handleEvent((ThreadDeathEvent) event, executionTraceOracle);
 		} else if (event instanceof ClassPrepareEvent) {
-			return classPrepareEventHandler.handleEvent(
-					(ClassPrepareEvent) event, executionTraceOracle);
+			return classPrepareEventHandler.handleEvent((ClassPrepareEvent) event, executionTraceOracle);
 		} else if (event instanceof VMStartEvent) {
-			return vmStartEventHandler.handleEvent((VMStartEvent) event,
-					executionTraceOracle);
+			return vmStartEventHandler.handleEvent((VMStartEvent) event, executionTraceOracle);
 		} else if (event instanceof VMDeathEvent) {
-			return vmDeathEventHandler.handleEvent((VMDeathEvent) event,
-					executionTraceOracle);
+			return vmDeathEventHandler.handleEvent((VMDeathEvent) event, executionTraceOracle);
 		} else if (event instanceof VMDisconnectEvent) {
-			return vmDisconnectEventHandler.handleEvent(
-					(VMDisconnectEvent) event, executionTraceOracle);
+			return vmDisconnectEventHandler.handleEvent((VMDisconnectEvent) event, executionTraceOracle);
 		}
 		return null;
 	}
-	
+
 	private boolean isConstructorEvent(MethodEntryEvent event) {
 		return event.method().name().equals("<init>");
 	}
@@ -83,28 +75,23 @@ public class DefaultEventHandler implements EventHandler {
 		return event.method().name().equals("<init>");
 	}
 
-	public void setExceptionEventHandler(
-			ExceptionEventHandler exceptionEventHandler) {
+	public void setExceptionEventHandler(ExceptionEventHandler exceptionEventHandler) {
 		this.exceptionEventHandler = exceptionEventHandler;
 	}
 
-	public void setMethodEntryEventHandler(
-			MethodEntryEventHandler methodEntryEventHandler) {
+	public void setMethodEntryEventHandler(MethodEntryEventHandler methodEntryEventHandler) {
 		this.methodEntryEventHandler = methodEntryEventHandler;
 	}
 
-	public void setMethodExitEventHandler(
-			MethodExitEventHandler methodExitEventHandler) {
+	public void setMethodExitEventHandler(MethodExitEventHandler methodExitEventHandler) {
 		this.methodExitEventHandler = methodExitEventHandler;
 	}
 
-	public void setThreadDeathEventHandler(
-			ThreadDeathEventHandler threadDeathEventHandler) {
+	public void setThreadDeathEventHandler(ThreadDeathEventHandler threadDeathEventHandler) {
 		this.threadDeathEventHandler = threadDeathEventHandler;
 	}
 
-	public void setClassPrepareEventHandler(
-			ClassPrepareEventHandler classPrepareEventHandler) {
+	public void setClassPrepareEventHandler(ClassPrepareEventHandler classPrepareEventHandler) {
 		this.classPrepareEventHandler = classPrepareEventHandler;
 	}
 
@@ -116,8 +103,7 @@ public class DefaultEventHandler implements EventHandler {
 		this.vmDeathEventHandler = vmDeathEventHandler;
 	}
 
-	public void setVmDisconnectEventHandler(
-			VMDisconnectEventHandler vmDisconnectEventHandler) {
+	public void setVmDisconnectEventHandler(VMDisconnectEventHandler vmDisconnectEventHandler) {
 		this.vmDisconnectEventHandler = vmDisconnectEventHandler;
 	}
 
@@ -128,9 +114,18 @@ public class DefaultEventHandler implements EventHandler {
 	 */
 	public class ExceptionEventHandler implements EventHandler<ExceptionEvent> {
 		@Override
-		public Execution<?> handleEvent(ExceptionEvent event,
-				ExecutionTraceOracle executionTraceOracle) {
-			// TODO Auto-generated method stub
+		public Execution<?> handleEvent(ExceptionEvent event, ExecutionTraceOracle executionTraceOracle) {
+			try {
+				ObjectReference exception = event.exception();
+				String className = exception.type().name();
+				StackFrame frame = event.thread().frame(0);
+				ObjectReference object = frame.thisObject();
+				Long oid = object.uniqueID();
+				ExceptionExecution exExec = executionTraceOracle.addException(event, className, object, oid);
+				return exExec;
+			} catch (Exception e) {
+				logger.error("Error in fetching exception event data: " + e.getMessage());
+			}
 			return null;
 		}
 	}
@@ -140,35 +135,29 @@ public class DefaultEventHandler implements EventHandler {
 	 * 
 	 * @see MethodEntryEvent
 	 */
-	public class MethodEntryEventHandler implements
-			EventHandler<MethodEntryEvent> {
+	public class MethodEntryEventHandler implements EventHandler<MethodEntryEvent> {
 		@Override
-		public Execution<?> handleEvent(MethodEntryEvent event,
-				ExecutionTraceOracle executionTraceOracle) {
+		public Execution<?> handleEvent(MethodEntryEvent event, ExecutionTraceOracle executionTraceOracle) {
 			Method method = event.method();
 			if (isConstructorEvent(event)) {
 				return null;
 			}
 			String className = method.declaringType().name();
-			Map<Object, Object> virtualMachineOptions = executionTraceOracle
-					.getVirtualMachineOptions();
-			if (!virtualMachineOptions
-					.containsKey(VirtualMachineOption.TargetPackageBase)
-					|| className.startsWith(virtualMachineOptions.get(
-							VirtualMachineOption.TargetPackageBase).toString())) {
+			Map<Object, Object> virtualMachineOptions = executionTraceOracle.getVirtualMachineOptions();
+			if (!virtualMachineOptions.containsKey(VirtualMachineOption.TargetPackageBase)
+					|| className.startsWith(virtualMachineOptions.get(VirtualMachineOption.TargetPackageBase)
+							.toString())) {
 				try {
 					StackFrame frame = event.thread().frame(0);
 					ObjectReference object = frame.thisObject();
 					if (object != null) {
 						long uniqueID = object.uniqueID();
-						executionTraceOracle.addExecution(event, className,
-								object, uniqueID);
+						executionTraceOracle.addExecution(event, className, object, uniqueID);
 						return executionTraceOracle.getLastExecution();
 					}
 				} catch (IncompatibleThreadStateException e) {
 					logger.warn("Current object could not be fetched.");
-					executionTraceOracle.addExecution(event, className, null,
-							null);
+					executionTraceOracle.addExecution(event, className, null, null);
 					return executionTraceOracle.getLastExecution();
 				}
 			}
@@ -181,11 +170,9 @@ public class DefaultEventHandler implements EventHandler {
 	 * 
 	 * @see MethodExitEvent
 	 */
-	public class MethodExitEventHandler implements
-			EventHandler<MethodExitEvent> {
+	public class MethodExitEventHandler implements EventHandler<MethodExitEvent> {
 		@Override
-		public Execution<?> handleEvent(MethodExitEvent event,
-				ExecutionTraceOracle executionTraceOracle) {
+		public Execution<?> handleEvent(MethodExitEvent event, ExecutionTraceOracle executionTraceOracle) {
 			Method method = event.method();
 			if (isConstructorEvent(event)) {
 				return null;
@@ -194,16 +181,12 @@ public class DefaultEventHandler implements EventHandler {
 			try {
 				ObjectReference object = event.thread().frame(0).thisObject();
 				if (null != object) {
-					Map<Object, Object> virtualMachineOptions = executionTraceOracle
-							.getVirtualMachineOptions();
-					if (!virtualMachineOptions
-							.containsKey(VirtualMachineOption.TargetPackageBase)
-							|| className.startsWith(virtualMachineOptions.get(
-									VirtualMachineOption.TargetPackageBase)
+					Map<Object, Object> virtualMachineOptions = executionTraceOracle.getVirtualMachineOptions();
+					if (!virtualMachineOptions.containsKey(VirtualMachineOption.TargetPackageBase)
+							|| className.startsWith(virtualMachineOptions.get(VirtualMachineOption.TargetPackageBase)
 									.toString())) {
 						long uniqueID = object.uniqueID();
-						executionTraceOracle.addExecution(event, className,
-								object, uniqueID);
+						executionTraceOracle.addExecution(event, className, object, uniqueID);
 						return executionTraceOracle.getLastExecution();
 					}
 				}
@@ -220,11 +203,9 @@ public class DefaultEventHandler implements EventHandler {
 	 * 
 	 * @see ThreadDeathEvent
 	 */
-	public class ThreadDeathEventHandler implements
-			EventHandler<ThreadDeathEvent> {
+	public class ThreadDeathEventHandler implements EventHandler<ThreadDeathEvent> {
 		@Override
-		public Execution<?> handleEvent(ThreadDeathEvent event,
-				ExecutionTraceOracle executionTraceOracle) {
+		public Execution<?> handleEvent(ThreadDeathEvent event, ExecutionTraceOracle executionTraceOracle) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -235,11 +216,9 @@ public class DefaultEventHandler implements EventHandler {
 	 * 
 	 * @see ClassPrepareEvent
 	 */
-	public class ClassPrepareEventHandler implements
-			EventHandler<ClassPrepareEvent> {
+	public class ClassPrepareEventHandler implements EventHandler<ClassPrepareEvent> {
 		@Override
-		public Execution<?> handleEvent(ClassPrepareEvent event,
-				ExecutionTraceOracle executionTraceOracle) {
+		public Execution<?> handleEvent(ClassPrepareEvent event, ExecutionTraceOracle executionTraceOracle) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -252,8 +231,7 @@ public class DefaultEventHandler implements EventHandler {
 	 */
 	public class VMStartEventHandler implements EventHandler<VMStartEvent> {
 		@Override
-		public Execution<?> handleEvent(VMStartEvent event,
-				ExecutionTraceOracle executionTraceOracle) {
+		public Execution<?> handleEvent(VMStartEvent event, ExecutionTraceOracle executionTraceOracle) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -266,8 +244,7 @@ public class DefaultEventHandler implements EventHandler {
 	 */
 	public class VMDeathEventHandler implements EventHandler<VMDeathEvent> {
 		@Override
-		public Execution<?> handleEvent(VMDeathEvent event,
-				ExecutionTraceOracle executionTraceOracle) {
+		public Execution<?> handleEvent(VMDeathEvent event, ExecutionTraceOracle executionTraceOracle) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -278,11 +255,9 @@ public class DefaultEventHandler implements EventHandler {
 	 * 
 	 * @see VMDisconnectEvent
 	 */
-	public class VMDisconnectEventHandler implements
-			EventHandler<VMDisconnectEvent> {
+	public class VMDisconnectEventHandler implements EventHandler<VMDisconnectEvent> {
 		@Override
-		public Execution<?> handleEvent(VMDisconnectEvent event,
-				ExecutionTraceOracle executionTraceOracle) {
+		public Execution<?> handleEvent(VMDisconnectEvent event, ExecutionTraceOracle executionTraceOracle) {
 			// TODO Auto-generated method stub
 			return null;
 		}

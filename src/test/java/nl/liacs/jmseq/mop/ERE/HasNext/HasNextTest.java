@@ -21,4 +21,9 @@ public class HasNextTest extends JUnit4Support {
 		return "HasNextTester";
 	}
 
+	@Override
+	protected boolean getTraceExceptions() {
+		return true;
+	}
+
 }

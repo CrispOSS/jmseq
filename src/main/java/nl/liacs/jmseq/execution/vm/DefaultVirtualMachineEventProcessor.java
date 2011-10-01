@@ -38,8 +38,7 @@ import com.sun.jdi.request.ThreadDeathRequest;
  * 
  * @author Behrooz Nobakht [behrooz dot nobakht at gmail dot com]
  */
-public class DefaultVirtualMachineEventProcessor implements
-		VirtualMachineEventProcessor, EventHandler {
+public class DefaultVirtualMachineEventProcessor implements VirtualMachineEventProcessor, EventHandler {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -70,8 +69,7 @@ public class DefaultVirtualMachineEventProcessor implements
 		executionTraceOracle.setVirtualMachineOptions(options);
 	}
 
-	public DefaultVirtualMachineEventProcessor(String name,
-			Map<Object, Object> options) {
+	public DefaultVirtualMachineEventProcessor(String name, Map<Object, Object> options) {
 		this(options);
 		this.name = name;
 	}
@@ -104,15 +102,13 @@ public class DefaultVirtualMachineEventProcessor implements
 	}
 
 	@Override
-	public Execution<?> handleEvent(Event event,
-			ExecutionTraceOracle executionTraceOracle) {
+	public Execution<?> handleEvent(Event event, ExecutionTraceOracle executionTraceOracle) {
 		if (event instanceof VMDeathEvent) {
 			handleVMDeathEvent((VMDeathEvent) event);
 		} else if (event instanceof VMDisconnectEvent) {
 			handleVMDisconnectEvent((VMDisconnectEvent) event);
 		} else {
-			Execution execution = this.eventHandler.handleEvent(event,
-					executionTraceOracle);
+			Execution execution = this.eventHandler.handleEvent(event, executionTraceOracle);
 			if (execution != null) {
 				logger.debug("Received event: {}", event);
 				executionVerifier.verfiyExecution(execution);
@@ -168,10 +164,8 @@ public class DefaultVirtualMachineEventProcessor implements
 		if (null == executionTraceOracle) {
 			throw new Error("executionTraceOracle is required.");
 		}
-		String basePackage = this.options.get(
-				VirtualMachineOption.TargetPackageBase).toString();
-		sequentialExecutionMetaData = sequentialExecuationMetaDataLoader
-				.loadMetaData(basePackage);
+		String basePackage = this.options.get(VirtualMachineOption.TargetPackageBase).toString();
+		sequentialExecutionMetaData = sequentialExecuationMetaDataLoader.loadMetaData(basePackage);
 		executionVerifier = new ExecutionVerifier(sequentialExecutionMetaData);
 	}
 
@@ -181,8 +175,7 @@ public class DefaultVirtualMachineEventProcessor implements
 	}
 
 	@Override
-	public void setExecutionTraceOracle(
-			ExecutionTraceOracle executionTraceOracle) {
+	public void setExecutionTraceOracle(ExecutionTraceOracle executionTraceOracle) {
 		this.executionTraceOracle = executionTraceOracle;
 	}
 
@@ -218,15 +211,11 @@ public class DefaultVirtualMachineEventProcessor implements
 	 * @param options
 	 * @param vm
 	 */
-	protected void setThreadDeathEventOptions(Map<Object, Object> options,
-			VirtualMachine vm) {
+	protected void setThreadDeathEventOptions(Map<Object, Object> options, VirtualMachine vm) {
 		if (options.containsKey(VirtualMachineOption.ThreadDeathEventSuspend)) {
-			Boolean value = (Boolean) options
-					.get(VirtualMachineOption.ThreadDeathEventSuspend);
-			ThreadDeathRequest tdr = vm.eventRequestManager()
-					.createThreadDeathRequest();
-			tdr.setSuspendPolicy(value ? EventRequest.SUSPEND_ALL
-					: EventRequest.SUSPEND_NONE);
+			Boolean value = (Boolean) options.get(VirtualMachineOption.ThreadDeathEventSuspend);
+			ThreadDeathRequest tdr = vm.eventRequestManager().createThreadDeathRequest();
+			tdr.setSuspendPolicy(value ? EventRequest.SUSPEND_ALL : EventRequest.SUSPEND_NONE);
 			tdr.enable();
 		}
 	}
@@ -235,15 +224,11 @@ public class DefaultVirtualMachineEventProcessor implements
 	 * @param options
 	 * @param vm
 	 */
-	protected void setClassPrepareEventOptions(Map<Object, Object> options,
-			VirtualMachine vm) {
+	protected void setClassPrepareEventOptions(Map<Object, Object> options, VirtualMachine vm) {
 		if (options.containsKey(VirtualMachineOption.ClassPrepareEventSuspend)) {
-			Boolean value = (Boolean) options
-					.get(VirtualMachineOption.ClassPrepareEventSuspend);
-			ClassPrepareRequest cpr = vm.eventRequestManager()
-					.createClassPrepareRequest();
-			cpr.setSuspendPolicy(value ? EventRequest.SUSPEND_ALL
-					: EventRequest.SUSPEND_NONE);
+			Boolean value = (Boolean) options.get(VirtualMachineOption.ClassPrepareEventSuspend);
+			ClassPrepareRequest cpr = vm.eventRequestManager().createClassPrepareRequest();
+			cpr.setSuspendPolicy(value ? EventRequest.SUSPEND_ALL : EventRequest.SUSPEND_NONE);
 			cpr.enable();
 		}
 	}
@@ -252,12 +237,9 @@ public class DefaultVirtualMachineEventProcessor implements
 	 * @param options
 	 * @param vm
 	 */
-	protected void setMethodEventOptions(Map<Object, Object> options,
-			VirtualMachine vm) {
-		MethodEntryRequest mer = vm.eventRequestManager()
-				.createMethodEntryRequest();
-		MethodExitRequest mexr = vm.eventRequestManager()
-				.createMethodExitRequest();
+	protected void setMethodEventOptions(Map<Object, Object> options, VirtualMachine vm) {
+		MethodEntryRequest mer = vm.eventRequestManager().createMethodEntryRequest();
+		MethodExitRequest mexr = vm.eventRequestManager().createMethodExitRequest();
 		if (options.containsKey(VirtualMachineOption.Excludes)) {
 			Object ex = options.get(VirtualMachineOption.Excludes);
 			String[] excludes = null;
@@ -275,17 +257,13 @@ public class DefaultVirtualMachineEventProcessor implements
 			}
 		}
 		if (options.containsKey(VirtualMachineOption.MethodEntryEventSuspend)) {
-			Boolean value = (Boolean) options
-					.get(VirtualMachineOption.MethodEntryEventSuspend);
-			mer.setSuspendPolicy(value ? EventRequest.SUSPEND_EVENT_THREAD
-					: EventRequest.SUSPEND_NONE);
+			Boolean value = (Boolean) options.get(VirtualMachineOption.MethodEntryEventSuspend);
+			mer.setSuspendPolicy(value ? EventRequest.SUSPEND_EVENT_THREAD : EventRequest.SUSPEND_NONE);
 			mer.enable();
 		}
 		if (options.containsKey(VirtualMachineOption.MethodExitEventSuspend)) {
-			Boolean value = (Boolean) options
-					.get(VirtualMachineOption.MethodExitEventSuspend);
-			mexr.setSuspendPolicy(value ? EventRequest.SUSPEND_EVENT_THREAD
-					: EventRequest.SUSPEND_NONE);
+			Boolean value = (Boolean) options.get(VirtualMachineOption.MethodExitEventSuspend);
+			mexr.setSuspendPolicy(value ? EventRequest.SUSPEND_EVENT_THREAD : EventRequest.SUSPEND_NONE);
 			mexr.enable();
 		}
 	}
@@ -294,16 +272,13 @@ public class DefaultVirtualMachineEventProcessor implements
 	 * @param options
 	 * @param vm
 	 */
-	protected void setExceptionEventOptions(Map<Object, Object> options,
-			VirtualMachine vm) {
+	protected void setExceptionEventOptions(Map<Object, Object> options, VirtualMachine vm) {
 		if (options.containsKey(VirtualMachineOption.ExceptionEventSuspend)) {
-			Boolean value = (Boolean) options
-					.get(VirtualMachineOption.ExceptionEventSuspend);
-			ExceptionRequest er = vm.eventRequestManager()
-					.createExceptionRequest(null, true, true);
-			er.setSuspendPolicy(value ? EventRequest.SUSPEND_ALL
-					: EventRequest.SUSPEND_NONE);
+			Boolean value = (Boolean) options.get(VirtualMachineOption.ExceptionEventSuspend);
+			ExceptionRequest er = vm.eventRequestManager().createExceptionRequest(null, true, true);
+			er.setSuspendPolicy(value ? EventRequest.SUSPEND_ALL : EventRequest.SUSPEND_NONE);
 			er.enable();
+			logger.debug("Exceptions enabled.");
 		}
 	}
 

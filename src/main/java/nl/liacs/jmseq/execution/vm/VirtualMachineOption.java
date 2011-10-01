@@ -17,6 +17,6 @@ public enum VirtualMachineOption {
 	ClassPrepareEventSuspend,
 	Excludes,
 	Classpath,
-	TargetPackageBase;
+	TargetPackageBase, Exceptions;
 
 }

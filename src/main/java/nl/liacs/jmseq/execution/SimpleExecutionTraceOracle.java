@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.event.Event;
+import com.sun.jdi.event.ExceptionEvent;
 import com.sun.jdi.event.MethodEntryEvent;
 import com.sun.jdi.event.MethodExitEvent;
 
@@ -25,6 +26,7 @@ public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 	private final List<Execution<?>> executions = new ArrayList<Execution<?>>();
 	private final List<Execution<MethodEntryEvent>> methodEntryExecutions = new ArrayList<Execution<MethodEntryEvent>>();
 	private List<Execution<MethodExitEvent>> methodExitExecutions = new ArrayList<Execution<MethodExitEvent>>();
+	private List<Execution<ExceptionEvent>> exceptionExecutions = new ArrayList<Execution<ExceptionEvent>>();
 
 	protected Map<Object, Object> vmOptions = new HashMap<Object, Object>();
 
@@ -71,6 +73,14 @@ public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 		} else if (MethodExitEvent.class.equals(eventType)) {
 			addMethodExitExecution((Execution<MethodExitEvent>) exec);
 		}
+	}
+	
+	@Override
+	public <E extends Event> ExceptionExecution addException(ExceptionEvent event, String className,
+			ObjectReference object, Long oid) {
+		ExceptionExecution ee = new ExceptionExecution(event, className, object, oid);
+		exceptionExecutions.add(ee);
+		return ee;
 	}
 
 	protected void addMethodExitExecution(Execution<MethodExitEvent> exec) {

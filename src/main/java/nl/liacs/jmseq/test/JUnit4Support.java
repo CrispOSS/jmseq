@@ -37,8 +37,7 @@ public abstract class JUnit4Support {
 	@After
 	public void tearDown() {
 		end = System.currentTimeMillis();
-		logger.info("Testing {} took {}ms", getClass().getSimpleName(),
-				(end - start));
+		logger.info("Testing {} took {}ms", getClass().getSimpleName(), (end - start));
 	}
 
 	protected Map<Object, Object> fillOptions(Map<Object, Object> options) {
@@ -47,12 +46,18 @@ public abstract class JUnit4Support {
 		options.put(VirtualMachineOption.MethodExitEventSuspend, true);
 		options.put(VirtualMachineOption.Excludes, getExcludedPatterns());
 		options.put(VirtualMachineOption.TargetPackageBase, getPackageBase());
+		if (getTraceExceptions()) {
+			options.put(VirtualMachineOption.ExceptionEventSuspend, true);
+		}
 		return options;
 	}
 
+	protected boolean getTraceExceptions() {
+		return false;
+	}
+
 	protected String[] getExcludedPatterns() {
-		return new String[] { "java.*", "javax.*", "sun.*", "com.sun.*",
-				"org.*", "net.*", "com.*" };
+		return new String[] { "java.*", "javax.*", "sun.*", "com.sun.*", "org.*", "net.*", "com.*" };
 	}
 
 	protected abstract String getPackageBase();
@@ -60,3 +65,4 @@ public abstract class JUnit4Support {
 	protected abstract String getClassName();
 
 }
+

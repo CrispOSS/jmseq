@@ -7,6 +7,7 @@ import nl.liacs.jmseq.execution.vm.VirtualMachineOptionsAware;
 
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.event.Event;
+import com.sun.jdi.event.ExceptionEvent;
 
 /**
  * 
@@ -39,5 +40,7 @@ public interface ExecutionTraceOracle extends VirtualMachineOptionsAware {
 	 * @param objectUniqueId
 	 */
 	<E extends Event> void addExecution(E event, String className, ObjectReference object, Long objectUniqueId);
+
+	<E extends Event> ExceptionExecution addException(ExceptionEvent event, String className, ObjectReference object, Long oid);
 
 }
