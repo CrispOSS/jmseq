@@ -1,7 +1,7 @@
 /*
  * Created on Mar 14, 2010 - 5:09:16 PM
  */
-package nl.liacs.jmseq.sample;
+package nl.liacs.jmseq.sample.apples;
 
 /**
  * 

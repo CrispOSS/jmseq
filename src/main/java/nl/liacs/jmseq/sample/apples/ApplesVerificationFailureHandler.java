@@ -1,7 +1,7 @@
 /*
  * Created on May 28, 2010 - 2:37:25 PM
  */
-package nl.liacs.jmseq.sample;
+package nl.liacs.jmseq.sample.apples;
 
 import nl.liacs.jmseq.execution.Execution;
 import nl.liacs.jmseq.verify.failurehandler.VerificationFailureHandler;

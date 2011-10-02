@@ -39,6 +39,10 @@ public abstract class JUnit4Support {
 		end = System.currentTimeMillis();
 		logger.info("Testing {} took {}ms", getClass().getSimpleName(), (end - start));
 	}
+	
+	protected void startJMseq() {
+		tracer.trace(className, null, options);
+	}
 
 	protected Map<Object, Object> fillOptions(Map<Object, Object> options) {
 		options.put(VirtualMachineOption.Classpath, true);
