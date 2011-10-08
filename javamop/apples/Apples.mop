@@ -1,14 +1,15 @@
-package mop;
+package mop.apples;
 
+import nl.liacs.jmseq.sample.apples.*;
 import mop.*;
 
 Apples(Apples a) {
 	event eating before(Pat p) :
 		call(* Pat.eat()) && target(p) {}
 	event retrieval before(Pat p) :
-		call(* Basket.retrieve()) && cflow(Apples_eating1(p)) {}
+		call(* Basket.get1()) && cflow(Apples_eating(p)) {}
 	event storage before(Pat p) :
-		call(* Basket.store()) && cflow(Apples_eating1(p)) {}
+		call(* Basket.get1()) && cflow(Apples_eating(p)) {}
 		
 	cfg : 
 		S -> eating retrieval

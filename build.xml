@@ -55,4 +55,8 @@
 		<javamopc mop.dir="ERE/HasNext" mop="HasNext.mop" />
 	</target>
 
+	<target name="javamopc-Apples">
+		<javamopc mop.dir="apples" mop="Apples.mop" />
+	</target>
+
 </project>
