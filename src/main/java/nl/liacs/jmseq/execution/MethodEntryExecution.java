@@ -21,7 +21,11 @@ public class MethodEntryExecution extends SimpleExecution<MethodEntryEvent> {
 	public MethodEntryExecution(MethodEntryEvent event, String className, ObjectReference object, Long objectUniqueId) {
 		super(event, className, object, objectUniqueId);
 	}
-	
+
+	public MethodEntryExecution(Execution parent, MethodEntryEvent event) {
+		super(parent, event);
+	}
+
 	@Override
 	public String toString() {
 		return "Method Entry: " + getExecutingClassType() + "." + getExecutingMethodName();

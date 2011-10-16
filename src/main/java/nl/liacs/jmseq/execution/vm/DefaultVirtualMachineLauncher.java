@@ -3,16 +3,17 @@
  */
 package nl.liacs.jmseq.execution.vm;
 
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
+import nl.liacs.jmseq.execution.ExecutionUtils;
+
 import org.slf4j.LoggerFactory;
 
 import com.sun.jdi.Bootstrap;
+import com.sun.jdi.ReferenceType;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
@@ -25,8 +26,8 @@ import com.sun.jdi.connect.VMStartException;
  * @author Behrooz Nobakht [behrooz dot nobakht at gmail dot com]
  */
 public class DefaultVirtualMachineLauncher implements VirtualMachineLauncher {
-	
-	protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass()); 
+
+	protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * @param programArguments
@@ -40,6 +41,7 @@ public class DefaultVirtualMachineLauncher implements VirtualMachineLauncher {
 		Map arguments = prepareLaunchingConnectorArguments(connector, programArguments, options);
 		try {
 			VirtualMachine vm = connector.launch(arguments);
+			loadAllClasses(vm);
 			long end = System.currentTimeMillis();
 			double time = ((end + 0.0) - start) / 1000.0;
 			logger.info("Initialized and launched a virtual machine in [" + time + "] seconds");
@@ -53,10 +55,24 @@ public class DefaultVirtualMachineLauncher implements VirtualMachineLauncher {
 		}
 	}
 
+	private void loadAllClasses(VirtualMachine vm) {
+		List<ReferenceType> all = vm.allClasses();
+		logger.warn("Load all classes for the virual machine: " + all.size());
+		long start = System.currentTimeMillis();
+		for (ReferenceType rt : all) {
+			String name = rt.name();
+			ExecutionUtils.loadClass(name);
+		}
+		long end = System.currentTimeMillis();
+		logger.warn("Loading all classes for the virual machine took: " + (end - start));
+	}
+
 	/**
 	 * @return
 	 */
 	protected LaunchingConnector findLaunchingConnector(String name) {
+		// List<Connector> connectors =
+		// org.eclipse.jdi.Bootstrap.virtualMachineManager().allConnectors();
 		List connectors = Bootstrap.virtualMachineManager().allConnectors();
 		Iterator iter = connectors.iterator();
 		while (iter.hasNext()) {

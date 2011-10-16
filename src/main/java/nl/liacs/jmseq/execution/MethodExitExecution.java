@@ -20,15 +20,19 @@ public class MethodExitExecution extends SimpleExecution<MethodExitEvent> {
 			long objectUniqueId) {
 		super(parent, event, className, object, objectUniqueId);
 		this.callerObject = null;
-		try {
-			this.callerObject = event.thread().frame(1).thisObject();
-		} catch (IncompatibleThreadStateException e) {
-			throw new RuntimeException(e);
-		}
+//		try {
+//			this.callerObject = event.thread().frame(1).thisObject();
+//		} catch (IncompatibleThreadStateException e) {
+//			throw new RuntimeException(e);
+//		}
 	}
 
 	public MethodExitExecution(MethodExitEvent event, String className, ObjectReference object, long objectUniqueId) {
 		this(null, event, className, object, objectUniqueId);
+	}
+
+	public MethodExitExecution(Execution parent, MethodExitEvent event) {
+		super(parent, event);
 	}
 
 	public ObjectReference getExecutingCallerObject() {

@@ -3,6 +3,7 @@
  */
 package nl.liacs.jmseq.verify.callexpression;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -30,23 +31,6 @@ public interface CallExpression {
 
 	String toString(String tab);
 	
-	MethodSignature getMethodSignature();
-
-	public interface MethodSignature {
-
-		String getReturnTypeName();
-
-		String getClassName();
-
-		String getMethodName();
-
-		List<String> getArgumentTypeNames();
-
-		Class<?> getReturnType();
-
-		Class<?> getDeclaringClass();
-
-		List<Class<?>> getArgumentTypes();
-	}
-
+	Method getMethod();
+	
 }

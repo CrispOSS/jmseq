@@ -3,6 +3,9 @@
  */
 package nl.liacs.jmseq.execution;
 
+import java.util.Map;
+
+import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.event.Event;
 import com.sun.jdi.event.MethodEntryEvent;
@@ -15,14 +18,15 @@ import com.sun.jdi.event.MethodExitEvent;
  */
 public class SimpleExecution<E extends Event> implements Execution<E> {
 
-	private final E event;
-	private final String className;
-	private final ObjectReference object;
-	private final Long objectUniqueId;
-	private final Execution<?> parent;
+	private E event;
+	private String className;
+	private ObjectReference object;
+	private Long objectUniqueId;
+	private Execution<?> parent;
 
-	private final String simpleClassName;
+	private String simpleClassName;
 	private String methodName;
+	private Class<?> clazz;
 
 	public SimpleExecution(E event, String className, ObjectReference object, Long objectUniqueId) {
 		this(null, event, className, object, objectUniqueId);
@@ -40,6 +44,59 @@ public class SimpleExecution<E extends Event> implements Execution<E> {
 		} else if (MethodExitEvent.class.isAssignableFrom(getExecutingEventType())) {
 			methodName = ((MethodExitEvent) event).method().name();
 		}
+		try {
+			this.clazz = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public SimpleExecution(Execution parent, E event) {
+		this.event = event;
+		this.parent = parent;
+		parseEvent(event);
+		// this.simpleClassName =
+		// this.className.substring(this.className.lastIndexOf('.') + 1);
+		this.clazz = loadClass();
+	}
+
+	private void parseEvent(E event) {
+//		if (MethodEntryEvent.class.isAssignableFrom(getExecutingEventType())) {
+		if (event instanceof MethodEntryEvent) {
+			MethodEntryEvent e = (MethodEntryEvent) event;
+			Method method = e.method();
+			this.className = method.declaringType().name();
+			methodName = method.name();
+		} else if (event instanceof MethodExitEvent) {
+//		} else if (MethodExitEvent.class.isAssignableFrom(getExecutingEventType())) {
+			Method method = ((MethodExitEvent) event).method();
+			this.className = method.declaringType().name();
+			methodName = method.name();
+		}
+	}
+
+	private Class<?> loadClass() {
+		return ExecutionUtils.loadClass(className);
+	}
+
+	@Override
+	public java.lang.reflect.Method findMethod() {
+		Class<?> clazz = getExecutingClass();
+		String methodName = getExecutingMethodName();
+		Map<String, java.lang.reflect.Method> map = ExecutionUtils.getMethodMappings(clazz);
+		if (map.containsKey(methodName)) {
+			return map.get(methodName);
+		}
+		java.lang.reflect.Method theMethod = null;
+		java.lang.reflect.Method[] methods = clazz.getMethods();
+		for (java.lang.reflect.Method method : methods) {
+			if (method.getName().equals(methodName)) {
+				theMethod = method;
+				map.put(methodName, method);
+				break;
+			}
+		}
+		return theMethod;
 	}
 
 	@Override
@@ -48,8 +105,8 @@ public class SimpleExecution<E extends Event> implements Execution<E> {
 	}
 
 	@Override
-	public Class<E> getExecutingEventType() {
-		return (Class<E>) event.getClass();
+	public Class getExecutingEventType() {
+		return event.getClass();
 	}
 
 	@Override
@@ -65,6 +122,11 @@ public class SimpleExecution<E extends Event> implements Execution<E> {
 	@Override
 	public String getExecutingClassType() {
 		return className;
+	}
+
+	@Override
+	public Class<?> getExecutingClass() {
+		return clazz;
 	}
 
 	@Override

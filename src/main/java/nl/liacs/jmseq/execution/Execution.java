@@ -3,6 +3,8 @@
  */
 package nl.liacs.jmseq.execution;
 
+import java.lang.reflect.Method;
+
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.event.Event;
 
@@ -42,7 +44,7 @@ public interface Execution<E extends Event> {
 	 * @return
 	 */
 	String getExecutingClassTypeSimpleName();
-	
+
 	/**
 	 * @return
 	 */
@@ -57,5 +59,12 @@ public interface Execution<E extends Event> {
 	 * @return
 	 */
 	long getExecutingObjectUniqueId();
+
+	/**
+	 * @return
+	 */
+	Class<?> getExecutingClass();
+	
+	Method findMethod();
 
 }

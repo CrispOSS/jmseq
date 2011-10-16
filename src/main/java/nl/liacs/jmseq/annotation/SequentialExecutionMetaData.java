@@ -3,10 +3,10 @@
  */
 package nl.liacs.jmseq.annotation;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import nl.liacs.jmseq.execution.Execution;
+import nl.liacs.jmseq.utils.CollectionUtils;
 
 /**
  * 
@@ -15,7 +15,7 @@ import nl.liacs.jmseq.execution.Execution;
  */
 public class SequentialExecutionMetaData {
 
-	private final Map<String, SequencedObjectMetaData> metadata = new HashMap<String, SequencedObjectMetaData>();
+	private final Map<String, SequencedObjectMetaData> metadata = CollectionUtils.createMap();
 
 	public boolean contains(String className) {
 		return metadata.containsKey(className);

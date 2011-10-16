@@ -1,23 +1,30 @@
 package nl.liacs.jmseq.verify.callexpression;
 
-import java.util.ArrayList;
+import java.lang.reflect.Method;
 import java.util.List;
 
-import org.springframework.util.ClassUtils;
+import nl.liacs.jmseq.utils.CollectionUtils;
 
 /**
  * 
  * @author Behrooz Nobakht
- *
+ * 
  */
 public class BaseCallExpression implements CallExpression {
 
 	protected String originalExpression;
 	protected Occurrence occurrence = Occurrence.Once;
 	protected CallExpression outerCallExpression = null;
-	protected List<CallExpression> innerCallExpressions = new ArrayList<CallExpression>();
-	protected List<CallExpression> siblingCallExpressions = new ArrayList<CallExpression>();
-	protected MethodSignature methodSignature = new MethodSignatureImpl();
+	protected List<CallExpression> innerCallExpressions = CollectionUtils.createList();;
+	protected List<CallExpression> siblingCallExpressions = CollectionUtils.createList();;
+	private Method method;
+
+	public BaseCallExpression() {
+	}
+
+	protected BaseCallExpression(Method method) {
+		this.method = method;
+	}
 
 	@Override
 	public String getExpression() {
@@ -53,10 +60,10 @@ public class BaseCallExpression implements CallExpression {
 	public List<CallExpression> getSiblingCallExpressions() {
 		return this.siblingCallExpressions;
 	}
-
+	
 	@Override
-	public MethodSignature getMethodSignature() {
-		return this.methodSignature;
+	public Method getMethod() {
+		return method;
 	}
 
 	public String toString(String tab) {
@@ -101,76 +108,4 @@ public class BaseCallExpression implements CallExpression {
 		return getExpression().equals(o.getExpression());
 	}
 
-	protected MethodSignature buildMethodSignature(String returnType, String className, String methodName,
-			List<String> argumentTypeNames) {
-		MethodSignatureImpl ms = new MethodSignatureImpl();
-		ms.returnTypeName = returnType;
-		ms.className = className;
-		ms.methodName = methodName;
-		ms.argumentTypeNames = argumentTypeNames;
-
-		try {
-			ClassLoader cl = getClass().getClassLoader();
-			ms.returnType = returnType.equals("void") ? Void.TYPE : ClassUtils.forName(returnType, cl);
-			ms.clazz = ClassUtils.forName(className, cl);
-			List<Class<?>> argumentTypes = new ArrayList<Class<?>>();
-			for (String argTypeName : argumentTypeNames) {
-				argumentTypes.add(ClassUtils.forName(argTypeName, cl));
-			}
-			ms.argumentTypes = argumentTypes;
-		} catch (ClassNotFoundException e) {
-			return null;
-		} catch (LinkageError e) {
-			return null;
-		}
-
-		return ms;
-	}
-
-	class MethodSignatureImpl implements MethodSignature {
-
-		private Class<?> returnType;
-		private Class<?> clazz;
-		private List<Class<?>> argumentTypes;
-
-		private String returnTypeName;
-		private String className;
-		private String methodName;
-		private List<String> argumentTypeNames;
-
-		@Override
-		public List<String> getArgumentTypeNames() {
-			return argumentTypeNames;
-		}
-
-		@Override
-		public List<Class<?>> getArgumentTypes() {
-			return argumentTypes;
-		}
-
-		@Override
-		public String getClassName() {
-			return className;
-		}
-
-		@Override
-		public Class<?> getDeclaringClass() {
-			return clazz;
-		}
-
-		@Override
-		public String getMethodName() {
-			return methodName;
-		}
-
-		@Override
-		public Class<?> getReturnType() {
-			return returnType;
-		}
-
-		@Override
-		public String getReturnTypeName() {
-			return returnTypeName;
-		}
-	}
 }

@@ -22,8 +22,11 @@ public class SimpleAspectJCallExpression extends BaseCallExpression {
 			List<String> argumentTypeNameList) {
 		this("call(" + modifier + " " + returnType + " " + className + "." + methodName + "("
 				+ StringUtils.collectionToCommaDelimitedString(argumentTypeNameList) + ")" + ")");
-		this.methodSignature = buildMethodSignature(returnType, className, methodName, argumentTypeNameList);
+//		this.methodSignature = buildMethodSignature(returnType, className, methodName, argumentTypeNameList);
 	}
 
+	public SimpleAspectJCallExpression(java.lang.reflect.Method method) {
+		super(method);
+	}
 
 }

@@ -37,9 +37,9 @@ public abstract class JUnit4Support {
 	@After
 	public void tearDown() {
 		end = System.currentTimeMillis();
-		logger.info("Testing {} took {}ms", getClass().getSimpleName(), (end - start));
+		logger.info("Testing {} took {}ms", getClassName(), (end - start));
 	}
-	
+
 	protected void startJMseq() {
 		tracer.trace(className, null, options);
 	}
@@ -69,4 +69,3 @@ public abstract class JUnit4Support {
 	protected abstract String getClassName();
 
 }
-

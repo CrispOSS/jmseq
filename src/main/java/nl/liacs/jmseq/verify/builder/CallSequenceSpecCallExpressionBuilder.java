@@ -9,6 +9,7 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 
 import nl.liacs.jmseq.execution.Execution;
+import nl.liacs.jmseq.utils.CollectionUtils;
 import nl.liacs.jmseq.verify.callexpression.CallExpression;
 import nl.liacs.jmseq.verify.callexpression.CallExpressionFactory;
 import nl.liacs.jmseq.verify.callexpression.Occurrence;
@@ -39,7 +40,7 @@ public class CallSequenceSpecCallExpressionBuilder implements CallExpressionBuil
 		transitions = new StateTransitionMap();
 		State s_0 = new State("START", StateType.START);
 		State s_f = null;
-		Map<CallExpression, State> states = new HashMap<CallExpression, State>();
+		Map<CallExpression, State> states = CollectionUtils.createMap();
 		State currentState = null;
 		State lastClosedExpressionState = null;
 		State lastClosedExpressionStatePlus = null;

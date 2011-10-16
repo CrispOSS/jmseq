@@ -40,6 +40,8 @@ public interface ExecutionTraceOracle extends VirtualMachineOptionsAware {
 	 * @param objectUniqueId
 	 */
 	<E extends Event> void addExecution(E event, String className, ObjectReference object, Long objectUniqueId);
+	
+	<E extends Event> void addExecution(E event);
 
 	<E extends Event> ExceptionExecution addException(ExceptionEvent event, String className, ObjectReference object, Long oid);
 

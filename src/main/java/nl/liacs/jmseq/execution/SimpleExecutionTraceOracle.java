@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.liacs.jmseq.utils.CollectionUtils;
+
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.event.Event;
 import com.sun.jdi.event.ExceptionEvent;
@@ -23,10 +25,10 @@ public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 
 	private final Object mutex = new Object();
 
-	private final List<Execution<?>> executions = new ArrayList<Execution<?>>();
-	private final List<Execution<MethodEntryEvent>> methodEntryExecutions = new ArrayList<Execution<MethodEntryEvent>>();
-	private List<Execution<MethodExitEvent>> methodExitExecutions = new ArrayList<Execution<MethodExitEvent>>();
-	private List<Execution<ExceptionEvent>> exceptionExecutions = new ArrayList<Execution<ExceptionEvent>>();
+	private final List<Execution<?>> executions = CollectionUtils.createList();
+	private final List<Execution<MethodEntryEvent>> methodEntryExecutions = CollectionUtils.createList();
+	private List<Execution<MethodExitEvent>> methodExitExecutions = CollectionUtils.createList();
+	private List<Execution<ExceptionEvent>> exceptionExecutions = CollectionUtils.createList();
 
 	protected Map<Object, Object> vmOptions = new HashMap<Object, Object>();
 
@@ -57,11 +59,24 @@ public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 	}
 
 	public <E extends Event> void addExecution(E event, String className, ObjectReference object, Long objectUniqueId) {
-		Class<E> eventType = (Class<E>) event.getClass();
-		if (MethodEntryEvent.class.isAssignableFrom(eventType)) {
+//		Class<E> eventType = (Class<E>) event.getClass();
+//		if (MethodEntryEvent.class.isAssignableFrom(eventType)) {
+		if (event instanceof MethodEntryEvent) {
 			addMethodEntryExecution((MethodEntryEvent) event, className, object, objectUniqueId);
-		} else if (MethodExitEvent.class.isAssignableFrom(eventType)) {
+		} else if (event instanceof MethodExitEvent) {
+//		} else if (MethodExitEvent.class.isAssignableFrom(eventType)) {
 			addMethodExitExecution((MethodExitEvent) event, className, object, objectUniqueId);
+		}
+	}
+	
+	public <E extends Event> void addExecution(E event) {
+//		Class<E> eventType = (Class<E>) event.getClass();
+//		if (MethodEntryEvent.class.isAssignableFrom(eventType)) {
+		if (event instanceof MethodEntryEvent) {
+			addMethodEntryExecution((MethodEntryEvent) event);
+//		} else if (MethodExitEvent.class.isAssignableFrom(eventType)) {
+		} else if (event instanceof MethodExitEvent) {
+			addMethodExitExecution((MethodExitEvent) event);
 		}
 	}
 
@@ -110,6 +125,22 @@ public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 		}
 	}
 
+	protected void addMethodExitExecution(MethodExitEvent event) {
+		synchronized (mutex) {
+			MethodExitExecution exec = new MethodExitExecution(getLastExecution(), event);
+			executions.add(exec);
+			methodExitExecutions.add(exec);
+		}
+	}
+	
+	protected void addMethodEntryExecution(MethodEntryEvent event) {
+		synchronized (mutex) {
+			MethodEntryExecution exec = new MethodEntryExecution(getLastExecution(), event);
+			executions.add(exec);
+			methodEntryExecutions.add(exec);
+		}
+	}
+	
 	protected void addMethodEntryExecution(Execution<MethodEntryEvent> exec) {
 		synchronized (mutex) {
 			executions.add(exec);

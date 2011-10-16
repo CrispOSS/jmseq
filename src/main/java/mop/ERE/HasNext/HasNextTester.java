@@ -8,7 +8,7 @@ public class HasNextTester {
 	HasNextRunner v;
 	
 	public HasNextTester() {
-		v = new HasNextRunner(fillVector(10), 10);
+		v = new HasNextRunner(fillVector(200000), 200000);
 	}
 
 	public void runFailure() {

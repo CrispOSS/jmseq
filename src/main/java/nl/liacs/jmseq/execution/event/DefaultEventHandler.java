@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.InternalException;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.StackFrame;
@@ -138,29 +139,32 @@ public class DefaultEventHandler implements EventHandler {
 	public class MethodEntryEventHandler implements EventHandler<MethodEntryEvent> {
 		@Override
 		public Execution<?> handleEvent(MethodEntryEvent event, ExecutionTraceOracle executionTraceOracle) {
-			Method method = event.method();
+//			Method method = event.method();
 			if (isConstructorEvent(event)) {
 				return null;
 			}
-			String className = method.declaringType().name();
-			Map<Object, Object> virtualMachineOptions = executionTraceOracle.getVirtualMachineOptions();
-			if (!virtualMachineOptions.containsKey(VirtualMachineOption.TargetPackageBase)
-					|| className.startsWith(virtualMachineOptions.get(VirtualMachineOption.TargetPackageBase)
-							.toString())) {
+//			String className = method.declaringType().name();
+//			Map<Object, Object> virtualMachineOptions = executionTraceOracle.getVirtualMachineOptions();
+//			if (!virtualMachineOptions.containsKey(VirtualMachineOption.TargetPackageBase)
+//					|| className.startsWith(virtualMachineOptions.get(VirtualMachineOption.TargetPackageBase)
+//							.toString())) {
 				try {
-					StackFrame frame = event.thread().frame(0);
-					ObjectReference object = frame.thisObject();
-					if (object != null) {
-						long uniqueID = object.uniqueID();
-						executionTraceOracle.addExecution(event, className, object, uniqueID);
+//					StackFrame frame = event.thread().frame(0);
+//					ObjectReference object = frame.thisObject();
+//					if (object != null) {
+//						long uniqueID = object.uniqueID();
+						executionTraceOracle.addExecution(event);
 						return executionTraceOracle.getLastExecution();
-					}
-				} catch (IncompatibleThreadStateException e) {
-					logger.warn("Current object could not be fetched.");
-					executionTraceOracle.addExecution(event, className, null, null);
-					return executionTraceOracle.getLastExecution();
+//					}
+				} 
+//				catch (IncompatibleThreadStateException e) {
+//					logger.warn("Current object could not be fetched.");
+//					executionTraceOracle.addExecution(event, className, null, null);
+//					return executionTraceOracle.getLastExecution();
+//				} 
+				catch (InternalException e) {
 				}
-			}
+//			}
 			return null;
 		}
 	}
@@ -173,27 +177,29 @@ public class DefaultEventHandler implements EventHandler {
 	public class MethodExitEventHandler implements EventHandler<MethodExitEvent> {
 		@Override
 		public Execution<?> handleEvent(MethodExitEvent event, ExecutionTraceOracle executionTraceOracle) {
-			Method method = event.method();
 			if (isConstructorEvent(event)) {
 				return null;
 			}
-			String className = method.declaringType().name();
+//			Method method = event.method();
+//			String className = method.declaringType().name();
 			try {
-				ObjectReference object = event.thread().frame(0).thisObject();
-				if (null != object) {
-					Map<Object, Object> virtualMachineOptions = executionTraceOracle.getVirtualMachineOptions();
-					if (!virtualMachineOptions.containsKey(VirtualMachineOption.TargetPackageBase)
-							|| className.startsWith(virtualMachineOptions.get(VirtualMachineOption.TargetPackageBase)
-									.toString())) {
-						long uniqueID = object.uniqueID();
-						executionTraceOracle.addExecution(event, className, object, uniqueID);
+//				ObjectReference object = event.thread().frame(0).thisObject();
+//				if (null != object) {
+//					Map<Object, Object> virtualMachineOptions = executionTraceOracle.getVirtualMachineOptions();
+//					if (!virtualMachineOptions.containsKey(VirtualMachineOption.TargetPackageBase)
+//							|| className.startsWith(virtualMachineOptions.get(VirtualMachineOption.TargetPackageBase)
+//									.toString())) {
+//						long uniqueID = object.uniqueID();
+						executionTraceOracle.addExecution(event);
 						return executionTraceOracle.getLastExecution();
-					}
-				}
-			} catch (IncompatibleThreadStateException e) {
-				// throw new Error("Current object detection failed on: " +
-				// event);
-			}
+//					}
+//				}
+			} catch (Exception e) {
+			} 
+//			catch (IncompatibleThreadStateException e) {
+//				// throw new Error("Current object detection failed on: " +
+//				// event);
+//			}
 			return null;
 		}
 	}

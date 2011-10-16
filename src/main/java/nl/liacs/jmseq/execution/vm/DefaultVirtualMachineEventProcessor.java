@@ -277,7 +277,7 @@ public class DefaultVirtualMachineEventProcessor implements VirtualMachineEventP
 			Boolean value = (Boolean) options.get(VirtualMachineOption.ExceptionEventSuspend);
 			ExceptionRequest er = vm.eventRequestManager().createExceptionRequest(null, true, true);
 			er.setSuspendPolicy(value ? EventRequest.SUSPEND_ALL : EventRequest.SUSPEND_NONE);
-			er.enable();
+			//er.enable();
 			logger.debug("Exceptions enabled.");
 		}
 	}

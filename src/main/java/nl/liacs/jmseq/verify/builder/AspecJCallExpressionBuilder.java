@@ -21,20 +21,38 @@ import com.sun.jdi.event.MethodExitEvent;
  */
 public class AspecJCallExpressionBuilder extends CallSequenceSpecCallExpressionBuilder {
 
+//	@Override
+//	public CallExpression buildCallExpression(Execution<?> execution) {
+//		if (!ExecutionUtils.isMethodEntryExecution(execution) && !ExecutionUtils.isMethodExitExecution(execution)) {
+//			throw new Error("Cannot build call expression out of " + execution);
+//		}
+//		Method method = getMethod(execution);
+//		String returnType = method.returnTypeName();
+//		String modifier = method.isPublic() ? "public" : method.isProtected() ? "protected"
+//				: method.isPackagePrivate() ? "" : method.isPrivate() ? "private" : "";
+//		modifier += method.isFinal() ? " final " : "";
+//		List<String> argumentTypeNamesList = method.argumentTypeNames();
+//		String methodName = execution.getExecutingMethodName();
+//		String className = execution.getExecutingClassType();
+//		return new SimpleAspectJCallExpression(modifier, returnType, className, methodName, argumentTypeNamesList);
+//	}
+
 	@Override
-	public CallExpression buildCallExpression(Execution<?> execution) {
-		if (!ExecutionUtils.isMethodEntryExecution(execution) && !ExecutionUtils.isMethodExitExecution(execution)) {
-			throw new Error("Cannot build call expression out of " + execution);
+	public CallExpression buildCallExpression(Execution<?> e) {
+		if (!ExecutionUtils.isMethodEntryExecution(e) && !ExecutionUtils.isMethodExitExecution(e)) {
+			throw new Error("Cannot build call expression out of " + e);
 		}
-		Method method = getMethod(execution);
-		String returnType = method.returnTypeName();
-		String modifier = method.isPublic() ? "public" : method.isProtected() ? "protected"
-				: method.isPackagePrivate() ? "" : method.isPrivate() ? "private" : "";
-		modifier += method.isFinal() ? " final " : "";
-		List<String> argumentTypeNamesList = method.argumentTypeNames();
-		String methodName = execution.getExecutingMethodName();
-		String className = execution.getExecutingClassType();
-		return new SimpleAspectJCallExpression(modifier, returnType, className, methodName, argumentTypeNamesList);
+//		Class<?> clazz = e.getExecutingClass();
+//		java.lang.reflect.Method theMethod = null;
+//		java.lang.reflect.Method[] methods = clazz.getMethods();
+//		for (java.lang.reflect.Method method : methods) {
+//			if (method.getName().equals(e.getExecutingMethodName())) {
+//				theMethod = method;
+//				break;
+//			}
+//		}
+		java.lang.reflect.Method theMethod = e.findMethod();
+		return new SimpleAspectJCallExpression(theMethod);
 	}
 
 	private Method getMethod(Execution<?> execution) {

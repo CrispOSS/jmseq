@@ -3,7 +3,6 @@
  */
 package nl.liacs.jmseq.verify;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +15,7 @@ import nl.liacs.jmseq.execution.Execution;
 import nl.liacs.jmseq.execution.ExecutionUtils;
 import nl.liacs.jmseq.execution.MethodEntryExecution;
 import nl.liacs.jmseq.execution.MethodExitExecution;
+import nl.liacs.jmseq.utils.CollectionUtils;
 import nl.liacs.jmseq.verify.builder.CallExpressionBuilder;
 import nl.liacs.jmseq.verify.builder.StateTransitionMap;
 import nl.liacs.jmseq.verify.callexpression.CallExpression;
@@ -64,7 +64,7 @@ public class CallExpressionStateMachine {
 	private CallExpression currentCallExpression;
 	private CallExpression currentMatcherCallExpression;
 	private Stack<CallExpression> expressions = new Stack<CallExpression>();
-	private Map<CallExpression, Set<CallExpression>> proposalCache = new HashMap<CallExpression, Set<CallExpression>>();
+	private Map<CallExpression, Set<CallExpression>> proposalCache = CollectionUtils.createMap();
 	private boolean running = false;
 
 	private StateTransitionMap transitions;

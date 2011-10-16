@@ -14,9 +14,9 @@ public class HasNextRunner {
 		this.repetition = repetition;
 	}
 
-	@SequencedMethod(value = "" + "{call(public boolean mop..Vector.iterator())}~"
-			+ "{call(public boolean mop..IteratorDelegate.hasNext())}~"
-			+ "{call(public Object mop..IteratorDelegate.next())}" + "")
+	@SequencedMethod(value = "" + "{call(* mop..Vector.iterator())}~"
+			+ "{call(* mop..IteratorDelegate.hasNext())}~"
+			+ "{call(* mop..IteratorDelegate.next())}" + "")
 	public void testFailure() {
 		Iterator<Integer> i = v.iterator();
 		i.hasNext();
@@ -24,16 +24,13 @@ public class HasNextRunner {
 		i.next();
 	}
 
-	@SequencedMethod(value = "{call(public boolean mop..Vector.iterator())}~"
-			+ "{call(public boolean mop..IteratorDelegate.hasNext())}~"
-			+ "{call(public Object mop..IteratorDelegate.next())}", allowExceptions = false, expect = { UnsupportedOperationException.class })
+	@SequencedMethod(value = "{call(* mop..Vector.iterator())}~"
+			+ "{call(* mop..IteratorDelegate.hasNext())}~"
+			+ "{call(* mop..IteratorDelegate.next())}", allowExceptions = false, expect = { UnsupportedOperationException.class })
 	public void testSuccess() {
 		Iterator<Integer> i = v.iterator();
 		for (int k = 0; k < repetition && i.hasNext(); ++k) {
 			i.hasNext();
-		}
-		if (true) {
-			throw new RuntimeException();
 		}
 		i.next();
 	}
