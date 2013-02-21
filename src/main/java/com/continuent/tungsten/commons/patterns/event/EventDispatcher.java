@@ -75,11 +75,11 @@ public class EventDispatcher implements Runnable
                 {
                     for (EventListener listener : listeners)
                     {
-                        if (logger.isDebugEnabled())
-                        {
-                            logger.debug(String.format("Dispatching event=%s",
-                                    event));
-                        }
+//                        if (logger.isDebugEnabled())
+//                        {
+//                            logger.debug(String.format("Dispatching event=%s",
+//                                    event));
+//                        }
                         listener.onEvent(event);
                     }
                 }
@@ -87,9 +87,9 @@ public class EventDispatcher implements Runnable
                 {
                     succeeded = false;
                     exception = e;
-                    logger.debug(String.format(
-                            "Failed to apply event %s, reason=%s", event, e
-                                    .getLocalizedMessage()));
+//                    logger.debug(String.format(
+//                            "Failed to apply event %s, reason=%s", event, e
+//                                    .getLocalizedMessage()));
                 }
 
                 // Return a response if desired.
@@ -103,7 +103,7 @@ public class EventDispatcher implements Runnable
         }
         catch (InterruptedException e)
         {
-            logger.debug("Dispatcher loop terminated by InterruptedException");
+//            logger.debug("Dispatcher loop terminated by InterruptedException");
         }
         running = false;
     }
@@ -154,7 +154,7 @@ public class EventDispatcher implements Runnable
      */
     public synchronized void start() throws Exception
     {
-        logger.debug("Starting event dispatcher");
+//        logger.debug("Starting event dispatcher");
         if (running == true)
             throw new Exception("NotificationListener already running");
         th = new Thread(this, getClass().getSimpleName());
@@ -169,7 +169,7 @@ public class EventDispatcher implements Runnable
     {
         if (running == false)
             return;
-        logger.info("Event dispatcher is exiting....");
+//        logger.info("Event dispatcher is exiting....");
         running = false;
         th.interrupt();
         th.join();

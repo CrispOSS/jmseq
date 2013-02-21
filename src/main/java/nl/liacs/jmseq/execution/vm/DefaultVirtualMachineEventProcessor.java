@@ -110,7 +110,7 @@ public class DefaultVirtualMachineEventProcessor implements VirtualMachineEventP
 		} else {
 			Execution execution = this.eventHandler.handleEvent(event, executionTraceOracle);
 			if (execution != null) {
-				logger.debug("Received event: {}", event);
+//				logger.debug("Received event: {}", event);
 				executionVerifier.verfiyExecution(execution);
 			}
 		}
@@ -278,7 +278,7 @@ public class DefaultVirtualMachineEventProcessor implements VirtualMachineEventP
 			ExceptionRequest er = vm.eventRequestManager().createExceptionRequest(null, true, true);
 			er.setSuspendPolicy(value ? EventRequest.SUSPEND_ALL : EventRequest.SUSPEND_NONE);
 			//er.enable();
-			logger.debug("Exceptions enabled.");
+//			logger.debug("Exceptions enabled.");
 		}
 	}
 

@@ -7,8 +7,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.liacs.jmseq.utils.CollectionUtils;
-
 import com.sun.jdi.event.ExceptionEvent;
 
 /**
@@ -18,8 +16,8 @@ import com.sun.jdi.event.ExceptionEvent;
  */
 public abstract class ExecutionUtils {
 
-	private static final Map<String, Class<?>> classes = CollectionUtils.createMap();
-	private static final Map<Class<?>, Map<String, Method>> methodMappings = CollectionUtils.createMap();
+	private static final Map<String, Class<?>> classes = new HashMap<>(4096);
+	private static final Map<Class<?>, Map<String, Method>> methodMappings = new HashMap<>(8192);
 
 	public static boolean isMethodEntryExecution(Execution<?> execution) {
 		return execution instanceof MethodEntryExecution;
@@ -49,11 +47,12 @@ public abstract class ExecutionUtils {
 	}
 
 	public static Class<?> loadClass(String className) {
-		if (classes.containsKey(className)) {
-			return classes.get(className);
+		final Class<?> c = classes.get(className);
+		if (c != null) {
+			return c;
 		}
 		try {
-			Class<?> clazz = Class.forName(className);
+			Class<?> clazz = Class.forName(className, false, ClassLoader.getSystemClassLoader());
 			classes.put(className, clazz);
 			return clazz;
 		} catch (ClassNotFoundException e) {
@@ -62,8 +61,9 @@ public abstract class ExecutionUtils {
 	}
 
 	public static Map<String, Method> getMethodMappings(Class<?> clazz) {
-		if (methodMappings.containsKey(clazz)) {
-			return methodMappings.get(clazz);
+		final Map<String, Method> m = methodMappings.get(clazz);
+		if (m != null) {
+			return m;
 		}
 		HashMap<String, Method> map = new HashMap<String, Method>();
 		methodMappings.put(clazz, map);

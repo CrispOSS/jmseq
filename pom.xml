@@ -12,7 +12,7 @@
 	It takes advantage of Java 5 Annotations and JPDA platform. To specify the requirements,
 	the developer uses annotations from JMSeq to annotate methods and classes to be monitored.]]>
 	</description>
-
+	
 	<repositories>
 		<repository>
 			<id>central</id>
@@ -121,9 +121,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<includes>
 						<include>**/*.java</include>
 						<include>**/*.xml</include>
@@ -133,11 +134,6 @@
 						<include>**/*.template</include>
 					</includes>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -219,16 +215,13 @@
 		<profile>
 			<id>default-tools.jar</id>
 			<activation>
-				<property>
-					<name>java.vendor</name>
-					<value>Sun Microsystems Inc.</value>
-				</property>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.sun</groupId>
 					<artifactId>tools</artifactId>
-					<version>1.6</version>
+					<version>1.7</version>
 					<scope>system</scope>
 					<systemPath>${java.home}/../lib/tools.jar</systemPath>
 				</dependency>
@@ -238,8 +231,8 @@
 
 
 	<properties>
+		<encoding>UTF-8</encoding>
 		<spring.version>3.0.0.RELEASE</spring.version>
-		<jdkLevel>1.6</jdkLevel>
 	</properties>
 
 </project>

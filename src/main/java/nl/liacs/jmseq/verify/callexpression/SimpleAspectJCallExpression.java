@@ -3,9 +3,8 @@
  */
 package nl.liacs.jmseq.verify.callexpression;
 
+import java.util.Iterator;
 import java.util.List;
-
-import org.springframework.util.StringUtils;
 
 /**
  * 
@@ -21,12 +20,27 @@ public class SimpleAspectJCallExpression extends BaseCallExpression {
 	public SimpleAspectJCallExpression(String modifier, String returnType, String className, String methodName,
 			List<String> argumentTypeNameList) {
 		this("call(" + modifier + " " + returnType + " " + className + "." + methodName + "("
-				+ StringUtils.collectionToCommaDelimitedString(argumentTypeNameList) + ")" + ")");
+				+ delimit(argumentTypeNameList) + ")" + ")");
 //		this.methodSignature = buildMethodSignature(returnType, className, methodName, argumentTypeNameList);
 	}
 
 	public SimpleAspectJCallExpression(java.lang.reflect.Method method) {
 		super(method);
+	}
+
+	static String delimit(List<String> coll) {
+		if (coll == null || coll.isEmpty()) {
+			return "";
+		}
+		String s = "";
+		Iterator<String> it = coll.iterator();
+		while (it.hasNext()) {
+			s += it.next();
+			if (it.hasNext()) {
+				s += ',';
+			}
+		}
+		return s;
 	}
 
 }

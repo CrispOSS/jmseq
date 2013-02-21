@@ -17,6 +17,7 @@ import com.sun.jdi.event.MethodExitEvent;
  * @author Behrooz Nobakht [behrooz dot nobakht at gmail dot com]
  */
 public class SimpleExecution<E extends Event> implements Execution<E> {
+	
 
 	private E event;
 	private String className;
@@ -27,6 +28,7 @@ public class SimpleExecution<E extends Event> implements Execution<E> {
 	private String simpleClassName;
 	private String methodName;
 	private Class<?> clazz;
+	private java.lang.reflect.Method theMethod;
 
 	public SimpleExecution(E event, String className, ObjectReference object, Long objectUniqueId) {
 		this(null, event, className, object, objectUniqueId);
@@ -38,17 +40,13 @@ public class SimpleExecution<E extends Event> implements Execution<E> {
 		this.object = object;
 		this.objectUniqueId = objectUniqueId;
 		this.parent = parent;
-		this.simpleClassName = this.className.substring(this.className.lastIndexOf('.') + 1);
 		if (MethodEntryEvent.class.isAssignableFrom(getExecutingEventType())) {
 			methodName = ((MethodEntryEvent) event).method().name();
 		} else if (MethodExitEvent.class.isAssignableFrom(getExecutingEventType())) {
 			methodName = ((MethodExitEvent) event).method().name();
 		}
-		try {
-			this.clazz = Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		clazz = ExecutionUtils.loadClass(className);
+		this.simpleClassName = this.className.substring(this.className.lastIndexOf('.') + 1);
 	}
 
 	public SimpleExecution(Execution parent, E event) {
@@ -57,7 +55,7 @@ public class SimpleExecution<E extends Event> implements Execution<E> {
 		parseEvent(event);
 		// this.simpleClassName =
 		// this.className.substring(this.className.lastIndexOf('.') + 1);
-		this.clazz = loadClass();
+		this.clazz = ExecutionUtils.loadClass(className);
 	}
 
 	private void parseEvent(E event) {
@@ -75,19 +73,18 @@ public class SimpleExecution<E extends Event> implements Execution<E> {
 		}
 	}
 
-	private Class<?> loadClass() {
-		return ExecutionUtils.loadClass(className);
-	}
-
 	@Override
 	public java.lang.reflect.Method findMethod() {
+		if (theMethod != null) {
+			return theMethod;
+		}
 		Class<?> clazz = getExecutingClass();
 		String methodName = getExecutingMethodName();
 		Map<String, java.lang.reflect.Method> map = ExecutionUtils.getMethodMappings(clazz);
-		if (map.containsKey(methodName)) {
-			return map.get(methodName);
+		theMethod = map.get(methodName);
+		if (theMethod != null) {
+			return theMethod;
 		}
-		java.lang.reflect.Method theMethod = null;
 		java.lang.reflect.Method[] methods = clazz.getMethods();
 		for (java.lang.reflect.Method method : methods) {
 			if (method.getName().equals(methodName)) {

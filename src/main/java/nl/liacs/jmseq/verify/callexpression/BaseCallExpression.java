@@ -1,9 +1,8 @@
 package nl.liacs.jmseq.verify.callexpression;
 
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 import java.util.List;
-
-import nl.liacs.jmseq.utils.CollectionUtils;
 
 /**
  * 
@@ -15,8 +14,8 @@ public class BaseCallExpression implements CallExpression {
 	protected String originalExpression;
 	protected Occurrence occurrence = Occurrence.Once;
 	protected CallExpression outerCallExpression = null;
-	protected List<CallExpression> innerCallExpressions = CollectionUtils.createList();;
-	protected List<CallExpression> siblingCallExpressions = CollectionUtils.createList();;
+	protected List<CallExpression> innerCallExpressions;
+	protected List<CallExpression> siblingCallExpressions;
 	private Method method;
 
 	public BaseCallExpression() {
@@ -43,6 +42,9 @@ public class BaseCallExpression implements CallExpression {
 
 	@Override
 	public List<CallExpression> getInnerCallExpressions() {
+		if (innerCallExpressions == null) {
+			innerCallExpressions = new LinkedList<>();
+		}
 		return this.innerCallExpressions;
 	}
 
@@ -58,6 +60,9 @@ public class BaseCallExpression implements CallExpression {
 
 	@Override
 	public List<CallExpression> getSiblingCallExpressions() {
+		if (siblingCallExpressions == null) {
+			siblingCallExpressions = new LinkedList<>();
+		}
 		return this.siblingCallExpressions;
 	}
 	
@@ -104,8 +109,7 @@ public class BaseCallExpression implements CallExpression {
 		if (!(obj instanceof CallExpression)) {
 			return false;
 		}
-		CallExpression o = (CallExpression) obj;
-		return getExpression().equals(o.getExpression());
+		return hashCode() == obj.hashCode();
 	}
 
 }

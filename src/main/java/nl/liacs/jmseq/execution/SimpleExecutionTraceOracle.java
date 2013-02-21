@@ -3,12 +3,9 @@
  */
 package nl.liacs.jmseq.execution;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
-
-import nl.liacs.jmseq.utils.CollectionUtils;
 
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.event.Event;
@@ -23,12 +20,12 @@ import com.sun.jdi.event.MethodExitEvent;
  */
 public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 
-	private final Object mutex = new Object();
+//	private final Object mutex = new Object();
 
-	private final List<Execution<?>> executions = CollectionUtils.createList();
-	private final List<Execution<MethodEntryEvent>> methodEntryExecutions = CollectionUtils.createList();
-	private List<Execution<MethodExitEvent>> methodExitExecutions = CollectionUtils.createList();
-	private List<Execution<ExceptionEvent>> exceptionExecutions = CollectionUtils.createList();
+	private final LinkedList<Execution<?>> executions = new LinkedList<>();
+	private final LinkedList<Execution<MethodEntryEvent>> methodEntryExecutions = new LinkedList<>();
+	private LinkedList<Execution<MethodExitEvent>> methodExitExecutions = new LinkedList<>();
+	private LinkedList<Execution<ExceptionEvent>> exceptionExecutions = new LinkedList<>();
 
 	protected Map<Object, Object> vmOptions = new HashMap<Object, Object>();
 
@@ -47,7 +44,7 @@ public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 		if (null == executions || executions.isEmpty()) {
 			return null;
 		}
-		return executions.get(0);
+		return executions.getFirst();
 	}
 
 	@Override
@@ -55,7 +52,7 @@ public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 		if (null == executions || executions.isEmpty()) {
 			return null;
 		}
-		return executions.get(executions.size() - 1);
+		return executions.getLast();
 	}
 
 	public <E extends Event> void addExecution(E event, String className, ObjectReference object, Long objectUniqueId) {
@@ -99,53 +96,53 @@ public class SimpleExecutionTraceOracle implements ExecutionTraceOracle {
 	}
 
 	protected void addMethodExitExecution(Execution<MethodExitEvent> exec) {
-		synchronized (mutex) {
+//		synchronized (mutex) {
 			executions.add(exec);
 			methodExitExecutions.add(exec);
-		}
+//		}
 	}
 
 	protected void addMethodExitExecution(MethodExitEvent event, String className, ObjectReference object,
 			Long objectUniqueId) {
-		synchronized (mutex) {
+//		synchronized (mutex) {
 			MethodExitExecution exec = new MethodExitExecution(getLastExecution(), event, className, object,
 					objectUniqueId);
 			executions.add(exec);
 			methodExitExecutions.add(exec);
-		}
+//		}
 	}
 
 	protected void addMethodEntryExecution(MethodEntryEvent event, String className, ObjectReference object,
 			Long objectUniqueId) {
-		synchronized (mutex) {
+//		synchronized (mutex) {
 			MethodEntryExecution exec = new MethodEntryExecution(getLastExecution(), event, className, object,
 					objectUniqueId);
 			executions.add(exec);
 			methodEntryExecutions.add(exec);
-		}
+//		}
 	}
 
 	protected void addMethodExitExecution(MethodExitEvent event) {
-		synchronized (mutex) {
+//		synchronized (mutex) {
 			MethodExitExecution exec = new MethodExitExecution(getLastExecution(), event);
 			executions.add(exec);
 			methodExitExecutions.add(exec);
-		}
+//		}
 	}
 	
 	protected void addMethodEntryExecution(MethodEntryEvent event) {
-		synchronized (mutex) {
+//		synchronized (mutex) {
 			MethodEntryExecution exec = new MethodEntryExecution(getLastExecution(), event);
 			executions.add(exec);
 			methodEntryExecutions.add(exec);
-		}
+//		}
 	}
 	
 	protected void addMethodEntryExecution(Execution<MethodEntryEvent> exec) {
-		synchronized (mutex) {
+//		synchronized (mutex) {
 			executions.add(exec);
 			methodEntryExecutions.add(exec);
-		}
+//		}
 	}
 
 }

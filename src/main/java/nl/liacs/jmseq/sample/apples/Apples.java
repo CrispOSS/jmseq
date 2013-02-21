@@ -31,7 +31,7 @@ public class Apples {
 
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
-		Basket b = new Basket(4);
+		Basket b = new Basket(400000);
 		Apples apples = new Apples(b);
 		apples.start();
 		long end = System.currentTimeMillis();

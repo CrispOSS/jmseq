@@ -90,7 +90,7 @@ public class CallExpressionStateMachine {
 			sm.addListener(new StateChangeListener() {
 				@Override
 				public void stateChanged(Entity entity, State oldState, State newState) {
-					logger.debug("{} => {}", oldState.getBaseName(), newState.getBaseName());
+//					logger.debug("{} => {}", oldState.getBaseName(), newState.getBaseName());
 				}
 			});
 		} catch (FiniteStateException e) {
@@ -99,17 +99,13 @@ public class CallExpressionStateMachine {
 	}
 
 	public boolean isValidNextExecution(Execution<?> execution) {
-		boolean isMethodEntryEvent = ExecutionUtils.isMethodEntryExecution(execution);
-		boolean isMethodExitEvent = ExecutionUtils.isMethodExitExecution(execution);
-		boolean isExceptionEvent = ExecutionUtils.isMethodExceptionExecution(execution);
-		if (isExceptionEvent) {
-			return isValidExceptionExecution((ExceptionExecution) execution);
-		}
-		if (isMethodEntryEvent) {
+		if (ExecutionUtils.isMethodEntryExecution(execution)) {
 			return isValidNextMethodEntryExecution2((MethodEntryExecution) execution);
-		} else if (isMethodExitEvent) {
+		} else if (ExecutionUtils.isMethodExitExecution(execution)) {
 			return isValidNexMethodExitExecution2((MethodExitExecution) execution);
-		}
+		} if (ExecutionUtils.isMethodExceptionExecution(execution)) {
+			return isValidExceptionExecution((ExceptionExecution) execution);
+		} 
 		throw new Error("An unacceptable execution ....");
 	}
 
@@ -219,7 +215,7 @@ public class CallExpressionStateMachine {
 			matchFound = this.callExpressionMatcher.match(candidate, callExpression);
 		}
 		long time = System.currentTimeMillis() - start;
-		logger.debug("Match took [{}]ms", time);
+//		logger.debug("Match took [{}]ms", time);
 		return matchFound;
 	}
 

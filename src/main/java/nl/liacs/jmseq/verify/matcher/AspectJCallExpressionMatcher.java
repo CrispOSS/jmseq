@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.liacs.jmseq.utils.CollectionUtils;
 import nl.liacs.jmseq.verify.callexpression.CallExpression;
 
 import org.aspectj.weaver.tools.PointcutExpression;
@@ -21,38 +20,40 @@ import org.aspectj.weaver.tools.ShadowMatch;
  */
 public class AspectJCallExpressionMatcher extends AbstractCallExpressionMatcher {
 
-	private PointcutParser parser;
-	private Map<String, PointcutExpression> cache = CollectionUtils.createMap();
-	private Map<PointcutExpression, Map<CallExpression, Boolean>> matchCache = CollectionUtils.createMap();
+	private final static PointcutParser parser = PointcutParser
+			.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();;
+	private final Map<String, PointcutExpression> cache = new HashMap<>(4096);
+	private final Map<String, Map<Method, Boolean>> matchCache = new HashMap<>(4096);
 
 	@Override
 	public CallExpression match(CallExpression candidate, CallExpression target) {
 		PointcutParser parser = getPointcutParser();
 		PointcutExpression pe = null;
-		if (cache.containsKey(candidate.getExpression())) {
-			pe = cache.get(candidate.getExpression());
+		String expr = candidate.getExpression();
+		if (cache.containsKey(expr)) {
+			pe = cache.get(expr);
 		} else {
-			logger.warn("Parsing pointcuts at {}", candidate.getExpression());
-			pe = parser.parsePointcutExpression(candidate.getExpression());
-			cache.put(candidate.getExpression(), pe);
+//			logger.warn("Parsing pointcuts at {}", candidate.getExpression());
+			pe = parser.parsePointcutExpression(expr);
+			cache.put(expr, pe);
 		}
-		if (!matchCache.containsKey(pe)) {
-			matchCache.put(pe, new HashMap<CallExpression, Boolean>());
+		if (!matchCache.containsKey(expr)) {
+			matchCache.put(expr, new HashMap<Method, Boolean>(2048));
 		}
-		Map<CallExpression, Boolean> matches = matchCache.get(pe);
-		Boolean currentMatch = matches.get(candidate);
+		Map<Method, Boolean> matches = matchCache.get(expr);
+		Method method = target.getMethod();
+		Boolean currentMatch = matches.get(method);
 		if (currentMatch != null && currentMatch) {
 			return candidate;
 		} else if (currentMatch != null && !currentMatch) {
 			return null;
 		}
-		Method method = target.getMethod();
 		ShadowMatch match = pe.matchesMethodCall(method, Object.class);
 		if (match.neverMatches()) {
-			matches.put(candidate, false);
+			matches.put(method, false);
 			return null;
 		}
-		matches.put(candidate, true);
+		matches.put(method, true);
 		return candidate;
 	}
 
@@ -124,10 +125,10 @@ public class AspectJCallExpressionMatcher extends AbstractCallExpressionMatcher 
 //	}
 
 	private PointcutParser getPointcutParser() {
-		if (null == this.parser) {
-			this.parser = PointcutParser
-					.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
-		}
+//		if (null == this.parser) {
+//			this.parser = PointcutParser
+//					.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+//		}
 		return this.parser;
 	}
 

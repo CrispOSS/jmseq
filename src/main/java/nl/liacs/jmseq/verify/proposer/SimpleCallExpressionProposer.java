@@ -54,7 +54,7 @@ public class SimpleCallExpressionProposer implements CallExpressionProposer {
 			possibilities.add(callExpression);
 		}
 		long time = System.currentTimeMillis() - start;
-		logger.debug("Proposals took [" + time + "]ms");
+//		logger.debug("Proposals took [" + time + "]ms");
 		return possibilities;
 	}
 

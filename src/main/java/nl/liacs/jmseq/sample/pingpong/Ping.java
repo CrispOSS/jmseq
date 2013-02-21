@@ -21,7 +21,7 @@ public class Ping {
 
 	public void ping() {
 		System.out.println("Pinged " + (++count) + ", ponging ...");
-		if (Math.random() > 0.7) {
+		if (Math.random() > 0.99) {
 			System.out.println("Enough.");
 			System.exit(0);
 			return;

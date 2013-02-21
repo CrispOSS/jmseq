@@ -39,9 +39,10 @@ public class AspecJCallExpressionBuilder extends CallSequenceSpecCallExpressionB
 
 	@Override
 	public CallExpression buildCallExpression(Execution<?> e) {
-		if (!ExecutionUtils.isMethodEntryExecution(e) && !ExecutionUtils.isMethodExitExecution(e)) {
-			throw new Error("Cannot build call expression out of " + e);
-		}
+//		if (!ExecutionUtils.isMethodEntryExecution(e) && !ExecutionUtils.isMethodExitExecution(e)) {
+//			throw new Error("Cannot build call expression out of " + e);
+//		}
+		
 //		Class<?> clazz = e.getExecutingClass();
 //		java.lang.reflect.Method theMethod = null;
 //		java.lang.reflect.Method[] methods = clazz.getMethods();

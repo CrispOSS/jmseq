@@ -4,9 +4,8 @@
 package nl.liacs.jmseq.annotation;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
-
-import nl.liacs.jmseq.utils.CollectionUtils;
 
 /**
  * 
@@ -20,7 +19,7 @@ public class SequencedObjectMetaData {
 
 	public SequencedObjectMetaData(Class<?> targetClass) {
 		this.targetClass = targetClass;
-		this.sequentiallyExecutedMethods = CollectionUtils.createList();
+		this.sequentiallyExecutedMethods = new ArrayList<>(16);
 	}
 
 	public SequencedObjectMetaData(Class<?> targetClass, List<Method> methods) {
